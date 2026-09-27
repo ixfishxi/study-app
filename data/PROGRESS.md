@@ -4,8 +4,7 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Inspect `e55589d` in Cursor's Source Control graph
-  (and the file Timeline for `converter.py`) and compare it to `git show HEAD`.
+- **Exact next step:** Explain what `HEAD` points to in `practice` right now.
 
 
 ## Lesson status
