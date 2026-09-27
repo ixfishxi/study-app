@@ -383,3 +383,10 @@ The Changes list stays empty when the working tree is clean, because that list
 is only uncommitted edits. The commit remains in the Source Control graph and
 in the file's Timeline (Explorer sidebar).
 </details>
+
+**45. What does `HEAD` point to?** `concept`
+<details><summary>Answer</summary>
+
+`HEAD` points at the current branch (`main`). That branch points at the commit
+you have checked out. `git log` marks that commit with `(HEAD -> main)`.
+</details>
