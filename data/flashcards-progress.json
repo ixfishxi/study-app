@@ -1,0 +1,343 @@
+{
+  "version": 1,
+  "settings": {
+    "newPerDay": 10,
+    "dayStartsHour": 4
+  },
+  "cards": {
+    "1": {
+      "hash": "a750b90b",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 3
+        }
+      ]
+    },
+    "2": {
+      "hash": "d29eb6f1",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 3
+        }
+      ]
+    },
+    "3": {
+      "hash": "09203b8e",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 3
+        }
+      ]
+    },
+    "4": {
+      "hash": "2610e27a",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 4
+        }
+      ]
+    },
+    "5": {
+      "hash": "26679b6e",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 2
+        }
+      ]
+    },
+    "6": {
+      "hash": "3e96c754",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 2
+        }
+      ]
+    },
+    "7": {
+      "hash": "fbeb8e7d",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 2
+        }
+      ]
+    },
+    "8": {
+      "hash": "cf8df3b3",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "9": {
+      "hash": "bc4ecc0f",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "10": {
+      "hash": "fd9f5ec1",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "11": {
+      "hash": "b01b6c31",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "12": {
+      "hash": "6cfe0130",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "13": {
+      "hash": "ff18d2b4",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "14": {
+      "hash": "ae4aef9c",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 1
+        }
+      ]
+    },
+    "15": {
+      "hash": "d6960832",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 3
+        }
+      ]
+    },
+    "16": {
+      "hash": "df5ecd43",
+      "introduced": "2026-09-27",
+      "step": 0,
+      "intervalDays": 1,
+      "due": "2026-09-28",
+      "streak": 0,
+      "coldPasses": 0,
+      "coldMisses": 0,
+      "lastDay": "2026-09-27",
+      "history": [
+        {
+          "day": "2026-09-27",
+          "type": "learn",
+          "attempts": 2
+        }
+      ]
+    }
+  },
+  "daysStudied": [
+    "2026-09-27"
+  ],
+  "session": {
+    "day": "2026-09-27",
+    "queue": [],
+    "done": [
+      "8",
+      "5",
+      "6",
+      "7",
+      "1",
+      "2",
+      "3",
+      "4",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "16",
+      "15"
+    ],
+    "attempts": {
+      "1": 3,
+      "2": 3,
+      "3": 3,
+      "4": 4,
+      "5": 2,
+      "6": 2,
+      "7": 2,
+      "8": 1,
+      "9": 1,
+      "10": 1,
+      "11": 1,
+      "12": 1,
+      "13": 1,
+      "14": 1,
+      "15": 3,
+      "16": 2
+    },
+    "newAdded": 16,
+    "extraNew": 6
+  },
+  "updatedAt": "2026-09-27T21:00:27.673Z"
+}
