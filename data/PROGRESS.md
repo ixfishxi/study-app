@@ -4,9 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Commit only `.gitignore`, then paste
-  `git status --short` and `git log --oneline -1`. `.env` and `__pycache__`
-  are already ignored.
+- **Exact next step:** Predict whether an edit to an already committed file
+  still shows in `git status` after a `.gitignore` rule names that file.
 
 
 ## Lesson status
