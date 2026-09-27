@@ -185,25 +185,23 @@ const LS_PROGRESS = "gitcards.progress";
 const LS_PROGRESS_SIM = "gitcards.progress.sim";
 const LS_DECK = "gitcards.deck";
 const LS_COURSE = "gitcards.course";
-// Older versions stored the token unencrypted under LS_TOKEN; it is sealed on the next unlock.
 const LS_TOKEN = "gitcards.githubToken";
+// Left behind by the retired password version; removed on startup.
 const LS_TOKEN_SEALED = "gitcards.githubToken.sealed";
-// The study password is never stored. The page keeps only this PBKDF2 check value, and the
-// GitHub token is saved encrypted with a key derived from the same password.
-const PASSWORD_SALT = "859b25d151b2948606402ef5d7fb718c";
-const PASSWORD_CHECK = "b5adc17936ea205d1c49579973679b242cf9af58daf0219c763822abf1d80838";
-const PASSWORD_ITERATIONS = 600000;
-// The GitHub token built into the page, sealed with the study password's key, so no browser
-// needs it pasted. A token saved in a browser is tried after it. null when none is built in.
-const EMBEDDED_TOKEN = { iv: "3qbXR+nTTLLtFdXC", data: "0vcF57HD+uf5BHVaXuRJIv/wRvNieXAPOVn2GSGD+F6hpO9mGYaqqeVRH6vfLZrv66mnAGbJLReSCKN4hdThgcXxq6/AL3Vy72myoYgWRxJ9ThCuLr4cL0lqAmKnfcW2Eope8uz6IP4YtMQneQ==" };
 const FS_SUPPORTED = "showDirectoryPicker" in window;
+// sync-cloud.ps1 flips this to true in the copy it publishes to GitHub Pages. That copy is a
+// read-only viewer: it reads a snapshot from data/ next to it and never saves anything.
+const PUBLISHED = true;
+const PUBLISHED_DATA = {
+  [DECK_FILE]: `data/${DECK_FILE}`, [PROGRESS_FILE]: `data/${PROGRESS_FILE}`,
+  [COURSE_PROGRESS_FILE]: `data/${COURSE_PROGRESS_FILE}`, [COURSE_FILE]: `data/${COURSE_FILE}`,
+};
 
 const app = {
   deck: [], byId: new Map(), lessons: [], warnings: [],
   course: null, texts: {}, openLesson: null, refreshing: false,
   progress: null, dir: null, deckDir: null, courseDir: null, savedHandle: null, source: "none",
-  screen: "unlock", key: null, token: "", tokens: [], unlockError: "", unlocking: false,
-  revealed: false, cantRecall: false, typed: "",
+  screen: "connect", revealed: false, cantRecall: false, typed: "",
   undo: null, browserFilter: "all", browserSearch: "", openRow: null, connectError: "",
 };
 
@@ -482,6 +480,7 @@ function setSaveStatus(text, isErr) {
 }
 function clockTime() { return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
 function save() {
+  if (PUBLISHED) { setSaveStatus("Read-only copy: nothing is saved"); return saveChain; }
   app.progress.updatedAt = new Date().toISOString();
   const json = JSON.stringify(app.progress, null, 2);
   try { localStorage.setItem(SIM_DAY ? LS_PROGRESS_SIM : LS_PROGRESS, json); } catch {}
@@ -519,41 +518,6 @@ async function cloudError(r) {
   return `GitHub returned ${r.status}${msg ? `: ${msg}` : ""}`;
 }
 
-// ---------- Study password ----------
-const hexToBytes = (hex) => Uint8Array.from(hex.match(/../g), (h) => parseInt(h, 16));
-const bytesToHex = (bytes) => Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-const bytesToB64 = (bytes) => btoa(String.fromCharCode(...bytes));
-const b64ToBytes = (b64) => Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0));
-
-// Returns the key that seals the saved token, or null when the password is wrong.
-async function unlockKey(password) {
-  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
-  const params = { name: "PBKDF2", salt: hexToBytes(PASSWORD_SALT), iterations: PASSWORD_ITERATIONS, hash: "SHA-256" };
-  const bits = new Uint8Array(await crypto.subtle.deriveBits(params, base, 512));
-  if (bytesToHex(bits.slice(0, 32)) !== PASSWORD_CHECK) return null;
-  return crypto.subtle.importKey("raw", bits.slice(32), "AES-GCM", false, ["encrypt", "decrypt"]);
-}
-
-async function sealToken(token) {
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const data = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, app.key, new TextEncoder().encode(token)));
-  localStorage.setItem(LS_TOKEN_SEALED, JSON.stringify({ iv: bytesToB64(iv), data: bytesToB64(data) }));
-  localStorage.removeItem(LS_TOKEN);
-}
-
-async function openSealed(sealed) {
-  if (!sealed) return "";
-  try {
-    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(sealed.iv) }, app.key, b64ToBytes(sealed.data));
-    return new TextDecoder().decode(plain);
-  } catch { return ""; }
-}
-
-async function openSealedToken() {
-  try { return await openSealed(JSON.parse(localStorage.getItem(LS_TOKEN_SEALED) || "null")); }
-  catch { return ""; }
-}
-
 async function githubFetch(url, options) {
   try { return await fetch(url, options); }
   catch { throw new Error("Couldn't reach api.github.com. Check the internet connection, and that no browser shield or extension blocks that site."); }
@@ -586,7 +550,7 @@ async function diagnoseCloudAccess() {
 const cloud = {
   // Per path: the ETag (so unchanged files cost nothing to re-check), the blob sha (needed to save), and the text.
   cache: {},
-  token() { return app.token || ""; },
+  token() { return localStorage.getItem(LS_TOKEN) || ""; },
   headers(extra = {}) {
     return { Authorization: `Bearer ${this.token()}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...extra };
   },
@@ -648,10 +612,32 @@ function flushCloudSave() {
 
 function adoptProgress(p) {
   app.progress = normalize(p);
-  try { localStorage.setItem(LS_PROGRESS, JSON.stringify(app.progress, null, 2)); } catch {}
+  if (!PUBLISHED) { try { localStorage.setItem(LS_PROGRESS, JSON.stringify(app.progress, null, 2)); } catch {} }
   reconcileDeck();
   ensureSession();
   if (app.screen !== "study") render();
+}
+
+async function fetchPublished(name) {
+  let r;
+  try { r = await fetch(PUBLISHED_DATA[name], { cache: "no-store" }); }
+  catch { throw new Error("Couldn't reach the site. Check the internet connection."); }
+  return r.ok ? r.text() : null;
+}
+
+// The published copy starts from the snapshot every time, so a visit never keeps changes around.
+async function usePublished() {
+  const [md, progressText, courseProgress, course] =
+    await Promise.all([DECK_FILE, PROGRESS_FILE, COURSE_PROGRESS_FILE, COURSE_FILE].map(fetchPublished));
+  if (md == null) throw new Error("The published snapshot has no flash cards yet. It appears after the next lesson's sync.");
+  app.source = "published";
+  app.texts.progressSnapshot = progressText;
+  loadDeck(md);
+  loadCourse(courseProgress, course);
+  let snapshot = null;
+  try { snapshot = progressText ? JSON.parse(progressText) : null; } catch {}
+  app.progress = normalize(snapshot);
+  finishLoad();
 }
 
 async function useCloud() {
@@ -749,12 +735,13 @@ function finishLoad() {
   showScreen("dashboard");
 }
 
-function canReadSources() { return !!app.dir || app.source === "server" || app.source === "cloud"; }
+function canReadSources() { return !!app.dir || ["server", "cloud", "published"].includes(app.source); }
 
 // Over HTTP this page is served from study/, so the course files are one level up.
 async function readSource(name) {
   const isDeck = name === DECK_FILE;
   if (app.source === "cloud") return cloud.read(name);
+  if (app.source === "published") return fetchPublished(name);
   if (app.dir) return readText(isDeck ? app.deckDir : app.courseDir, name);
   const r = await fetch(isDeck ? name : `../${name}`, { cache: "no-store" });
   return r.ok ? r.text() : null;
@@ -774,6 +761,14 @@ async function refreshSources(force = false) {
     if (force || courseProgress !== app.texts.courseProgress || course !== app.texts.course) {
       loadCourse(courseProgress, course);
       changed = true;
+    }
+    // A new snapshot is published after each lesson; show it unless a card is open.
+    if (app.source === "published" && app.screen !== "study") {
+      const text = await fetchPublished(PROGRESS_FILE);
+      if (text != null && text !== app.texts.progressSnapshot) {
+        app.texts.progressSnapshot = text;
+        try { adoptProgress(JSON.parse(text)); changed = true; } catch {}
+      }
     }
     // Pick up reviews saved from another browser, but never mid-card or over an unsaved change.
     if (app.source === "cloud" && !cloudSaveTimer && app.screen !== "study") {
@@ -947,15 +942,16 @@ function render() {
   $("#courseTab").textContent = cs ? `Course ${cs.pct}%` : "Course";
   $("#source").textContent = {
     cloud: `Cloud: ${CLOUD_REPO}`,
+    published: "Read-only copy (as of the last lesson)",
     folder: `Folder: ${app.dir?.name || ""}`, server: "Served over HTTP (read-only cards)",
     file: "Browser storage only", cache: "Cached cards (browser storage only)", none: "",
   }[app.source];
   const sim = $("#simBanner");
-  sim.classList.toggle("hidden", !SIM_DAY);
-  if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
+  sim.classList.toggle("hidden", !SIM_DAY && !PUBLISHED);
+  if (PUBLISHED) sim.textContent = "Read-only copy, as of the last lesson. You can flip through cards, but nothing here is saved. Study and save in study.html on your computer.";
+  else if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
   const main = $("#main");
-  if (app.screen === "unlock") { main.innerHTML = viewUnlock(); if (!app.unlocking) $("#passwordInput")?.focus(); }
-  else if (app.screen === "connect") main.innerHTML = viewConnect();
+  if (app.screen === "connect") main.innerHTML = PUBLISHED ? viewPublishedError() : viewConnect();
   else if (app.screen === "dashboard") main.innerHTML = viewDashboard();
   else if (app.screen === "study") { main.innerHTML = viewStudy(); afterStudyRender(); }
   else if (app.screen === "summary") main.innerHTML = viewSummary();
@@ -963,16 +959,13 @@ function render() {
   else if (app.screen === "course") main.innerHTML = viewCourse();
 }
 
-function viewUnlock() {
+function viewPublishedError() {
   return `
-  <div class="panel" style="max-width:440px;margin:40px auto">
-    <h2>Enter the study password</h2>
-    <p class="small muted">The password unlocks this browser's saved GitHub connection, so only you can study and change progress here.</p>
-    ${app.unlockError ? `<div class="error">${esc(app.unlockError)}</div>` : ""}
-    <div class="row" style="margin-top:12px;flex-wrap:nowrap">
-      <input type="password" id="passwordInput" inputmode="numeric" autocomplete="current-password" style="flex:1" ${app.unlocking ? "disabled" : ""}>
-      <button class="primary" data-action="unlock" ${app.unlocking ? "disabled" : ""}>${app.unlocking ? "Checking…" : "Unlock"}</button>
-    </div>
+  <div class="panel" style="max-width:520px;margin:40px auto">
+    <h2>This read-only copy couldn't load</h2>
+    ${app.connectError ? `<div class="error">${esc(app.connectError)}</div>` : ""}
+    <p class="small">Study and save progress in <code>study.html</code> on your computer. This online copy only shows the cards
+      and progress as of the last lesson.</p>
   </div>`;
 }
 
@@ -989,7 +982,7 @@ function viewConnect() {
     <div class="row" style="margin:14px 0">
       <label style="flex:1;min-width:260px">GitHub token
         <input type="password" id="tokenInput" autocomplete="off" spellcheck="false" style="width:100%"
-          placeholder="${app.token ? "Saved token will be used. Paste a new one to replace it." : "github_pat_…"}"></label>
+          placeholder="${cloud.token() ? "Saved token will be used. Paste a new one to replace it." : "github_pat_…"}"></label>
       <button class="primary big" data-action="connectCloud">Connect</button>
     </div>
     <details class="method">
@@ -1004,7 +997,7 @@ function viewConnect() {
       </ol>
       <p class="small">Already made a token that doesn't work? It's quickest to make a new one with the link above, then delete the old one on
         <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">GitHub &rsaquo; Settings &rsaquo; Fine-grained tokens</a>.</p>
-      <p class="muted small">The token is stored only in this browser, encrypted with your study password, and can only reach that one repository.
+      <p class="muted small">The token is stored only in this browser on this computer, and can only reach that one repository.
         Remove it any time with "Forget GitHub token" under Settings.</p>
     </details>
   </div>
@@ -1436,26 +1429,10 @@ const actions = {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   },
   import() { $("#importInput").click(); },
-  async unlock() {
-    const password = $("#passwordInput")?.value || "";
-    if (!password) { app.unlockError = "Enter the password."; render(); return; }
-    app.unlockError = ""; app.unlocking = true; render();
-    const key = await unlockKey(password).catch(() => null);
-    app.unlocking = false;
-    if (!key) { app.unlockError = "That password isn't right."; render(); return; }
-    app.key = key;
-    const oldPlainToken = localStorage.getItem(LS_TOKEN);
-    if (oldPlainToken) await sealToken(oldPlainToken);
-    const found = [await openSealed(EMBEDDED_TOKEN), await openSealedToken()];
-    app.tokens = found.filter((t, i) => t && found.indexOf(t) === i);
-    app.token = app.tokens[0] || "";
-    await start();
-  },
   async connectCloud() {
     const token = ($("#tokenInput")?.value || "").trim() || cloud.token();
     if (!token) { app.connectError = "Paste your GitHub token first."; render(); return; }
-    app.token = token;
-    await sealToken(token);
+    localStorage.setItem(LS_TOKEN, token);
     cloud.cache = {};
     app.connectError = "";
     setSaveStatus("Connecting to GitHub…");
@@ -1465,7 +1442,6 @@ const actions = {
   async forgetToken() {
     if (!confirm("Remove the GitHub token from this browser? Your progress stays in the cloud; paste the token again to reconnect.")) return;
     if (cloudSaveTimer) await flushCloudSave();
-    localStorage.removeItem(LS_TOKEN_SEALED);
     localStorage.removeItem(LS_TOKEN);
     location.reload();
   },
@@ -1505,7 +1481,6 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.id === "tokenInput" && e.key === "Enter") { e.preventDefault(); actions.connectCloud(); return; }
-  if (e.target.id === "passwordInput" && e.key === "Enter") { e.preventDefault(); actions.unlock(); return; }
   if (app.screen !== "study") return;
   if (!app.revealed && e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); actions.reveal(); return; }
   if (app.revealed && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -1563,17 +1538,17 @@ document.addEventListener("visibilitychange", () => { if (document.hidden && clo
 window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave(); });
 
 // ---------- Startup ----------
-// Nothing loads until the study password is entered; unlock() then calls start().
 async function start() {
-  if (app.tokens.length) {
+  localStorage.removeItem(LS_TOKEN_SEALED);
+  if (PUBLISHED) {
+    try { await usePublished(); }
+    catch (e) { app.connectError = e.message; showScreen("connect"); }
+    return;
+  }
+  if (cloud.token()) {
     setSaveStatus("Loading from GitHub…");
-    for (const token of app.tokens) {
-      app.token = token;
-      cloud.cache = {};
-      try { await useCloud(); return; }
-      catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; }
-    }
-    setSaveStatus("");
+    try { await useCloud(); return; }
+    catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; setSaveStatus(""); }
   } else if (FS_SUPPORTED) {
     try {
       const h = await idb.get("dir");
@@ -1598,7 +1573,7 @@ async function start() {
   }
   showScreen("connect");
 }
-showScreen("unlock");
+start();
 </script>
 </body>
 </html>
