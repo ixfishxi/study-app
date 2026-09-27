@@ -390,3 +390,10 @@ in the file's Timeline (Explorer sidebar).
 `HEAD` points at the current branch (`main`). That branch points at the commit
 you have checked out. `git log` marks that commit with `(HEAD -> main)`.
 </details>
+
+**46. What does a `.gitignore` rule do to a matching untracked file?** `concept`
+<details><summary>Answer</summary>
+
+The file stays on disk. Git stops listing it in `git status`, so it is not
+offered for the next commit. That is not a commit, and it is not a push.
+</details>
