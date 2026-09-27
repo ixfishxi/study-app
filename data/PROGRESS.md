@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say which file `git status --short` will still list
-  after `.gitignore` contains `*.log`: `scratch.log` or `.gitignore`.
+- **Exact next step:** Run `git check-ignore -v scratch.log` in `practice`
+  and paste the output.
 
 
 ## Lesson status
