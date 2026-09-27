@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say what ` M note.txt` in the sandbox demo shows
-  about a `.gitignore` rule on a file that is already committed.
+- **Exact next step:** Predict whether `git status` still shows `note.txt`
+  after `git rm --cached note.txt` in `sandbox`. The file stays on disk.
 
 
 ## Lesson status
