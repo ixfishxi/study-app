@@ -52,33 +52,35 @@ only when all four have dates.
 | L30 Debugging with an agent | Not started | | | | |
 | L31 The project brain | Not started | | | | |
 | L32 Scoped rules | Not started | | | | |
-| L33 Map an unfamiliar codebase | Not started | | | | |
-| L34 Characterize, then refactor | Not started | | | | |
-| L35 Dependencies and one setup command | Not started | | | | |
-| L36 More automatic checks | Not started | | | | |
-| L37 A fresh clone | Not started | | | | |
-| L38 Git worktrees | Not started | | | | |
-| L39 Cursor /worktree | Not started | | | | |
-| L40 Worktree setup | Not started | | | | |
-| L41 Cloud agents | Not started | | | | |
-| L42 Cloud environment setup | Not started | | | | |
-| L43 Moving work between local and cloud | Not started | | | | |
-| L44 Isolated-copy practice | Not started | | | | |
-| L45 Break a big request into tasks | Not started | | | | |
-| L46 GitHub Issues as the request queue | Not started | | | | |
-| L47 Two requests at once | Not started | | | | |
-| L48 Semantic conflicts | Not started | | | | |
-| L49 Subagents | Not started | | | | |
-| L50 MCP tools | Not started | | | | |
-| L51 Prompt injection | Not started | | | | |
-| L52 Hooks | Not started | | | | |
-| L53 Projects | Not started | | | | |
-| L54 Project subscriptions | Not started | | | | |
-| L55 Automations | Not started | | | | |
-| L56 Pruning the brain | Not started | | | | |
-| L57 Measuring your agent workflow | Not started | | | | |
-| L58 Full-loop practice | Not started | | | | |
-| L59 Agent capstone | Not started | | | | |
+| L33 Milestone 1: Solo agent sprint | Not started | | | | |
+| L34 Map an unfamiliar codebase | Not started | | | | |
+| L35 Characterize, then refactor | Not started | | | | |
+| L36 Dependencies and one setup command | Not started | | | | |
+| L37 More automatic checks | Not started | | | | |
+| L38 A fresh clone | Not started | | | | |
+| L39 Milestone 2: Take over a teammate's branch | Not started | | | | |
+| L40 Git worktrees | Not started | | | | |
+| L41 Cursor /worktree | Not started | | | | |
+| L42 Worktree setup | Not started | | | | |
+| L43 Cloud agents | Not started | | | | |
+| L44 Cloud environment setup | Not started | | | | |
+| L45 Moving work between local and cloud | Not started | | | | |
+| L46 Break a big request into tasks | Not started | | | | |
+| L47 GitHub Issues as the request queue | Not started | | | | |
+| L48 Two requests at once | Not started | | | | |
+| L49 Semantic conflicts | Not started | | | | |
+| L50 Milestone 3: Ship a release with parallel agents | Not started | | | | |
+| L51 Subagents | Not started | | | | |
+| L52 MCP tools | Not started | | | | |
+| L53 Prompt injection | Not started | | | | |
+| L54 Hooks | Not started | | | | |
+| L55 Projects | Not started | | | | |
+| L56 Project subscriptions | Not started | | | | |
+| L57 Automations | Not started | | | | |
+| L58 Pruning the brain | Not started | | | | |
+| L59 Measuring your agent workflow | Not started | | | | |
+| L60 Full-loop practice | Not started | | | | |
+| L61 Agent capstone | Not started | | | | |
 
 
 ## Mistakes to revisit
