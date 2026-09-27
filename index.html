@@ -1070,7 +1070,7 @@ function viewDashboard() {
       ? `<div class="row"><button class="primary big" data-action="study">${started ? "Continue today's session" : "Start today's session"}</button>
          <span class="muted small">${s.queue.length} card${s.queue.length === 1 ? "" : "s"} to recall correctly once each.</span></div>`
       : `<div class="row"><strong>${s.done.length ? "Today's session is complete." : "Nothing is due today."}</strong><span class="muted">${next}</span></div>`}
-    ${!s.queue.length && newRemaining ? `<div class="row" style="margin-top:12px">
+    ${!PUBLISHED && !s.queue.length && newRemaining ? `<div class="row" style="margin-top:12px">
         <button data-action="moreNew">Add up to ${app.progress.settings.newPerDay} more new cards today</button>
         <span class="muted small">${newRemaining} new card${newRemaining === 1 ? "" : "s"} waiting. Optional; spacing matters more than volume.</span></div>` : ""}
   </div>
@@ -1103,17 +1103,17 @@ function viewDashboard() {
 
   ${edited.length ? `<div class="notice">Edited since last review: ${edited.map((c) => `#${c.num}`).join(", ")}. Schedules were kept; read the new answer carefully next time.</div>` : ""}
 
-  <div class="grid2">
-    <div class="panel">
+  <div class="${PUBLISHED ? "" : "grid2"}">
+    ${PUBLISHED ? "" : `<div class="panel">
       <h2>Settings</h2>
       <div class="row" style="margin-bottom:10px"><label>New cards per day <input type="number" min="0" max="100" id="setNew" value="${app.progress.settings.newPerDay}"></label></div>
       <div class="row" style="margin-bottom:14px"><label>New day starts at
         <select id="setHour">${[0, 1, 2, 3, 4, 5, 6].map((h) => `<option value="${h}" ${h === app.progress.settings.dayStartsHour ? "selected" : ""}>${h === 0 ? "midnight" : h + " AM"}</option>`).join("")}</select></label></div>
       <div class="row"><button data-action="export">Export progress</button><button data-action="import">Import progress</button>
         ${app.source === "cloud" ? `<button data-action="forgetToken">Forget GitHub token</button>` : ""}</div>
-    </div>
+    </div>`}
     <div class="panel">
-      <details class="method">
+      <details class="method" open>
         <summary>How this works (successive relearning)</summary>
         <ul class="small">
           <li><strong>Recall before you look.</strong> Type the answer from memory; the answer stays hidden until you've tried.</li>
@@ -1270,7 +1270,7 @@ function viewBrowser() {
       <div class="small muted" style="margin-bottom:6px">${inline(c.lesson)} &middot; ${c.tags.map(esc).join(", ")}${st ? ` &middot; every ${st.intervalDays} day${st.intervalDays === 1 ? "" : "s"}` : ""}</div>
       <details><summary class="small">Show answer</summary><div class="answer" style="margin:8px 0">${renderMd(c.answer)}</div></details>
       <div class="hist" style="margin:8px 0">${hist}</div>
-      ${st ? `<button data-action="resetCard" data-id="${c.id}">Reset this card to New</button>` : ""}
+      ${st && !PUBLISHED ? `<button data-action="resetCard" data-id="${c.id}">Reset this card to New</button>` : ""}
     </td></tr>` : ""}`;
   }).join("");
 
@@ -1473,9 +1473,13 @@ const actions = {
   },
 };
 
+// The published read-only copy never runs these, even if a button is reached some other way.
+const EDIT_ACTIONS = new Set(["moreNew", "resetCard", "export", "import", "forgetToken", "connectCloud", "connect", "reconnect", "pickDeck"]);
+
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-action]");
   if (!el || !actions[el.dataset.action]) return;
+  if (PUBLISHED && EDIT_ACTIONS.has(el.dataset.action)) return;
   actions[el.dataset.action](el, e);
 });
 
@@ -1490,6 +1494,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("change", (e) => {
+  if (PUBLISHED && (e.target.id === "setNew" || e.target.id === "setHour")) return;
   if (e.target.id === "setNew") {
     const v = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
     app.progress.settings.newPerDay = v; ensureSession(); save(); render();
