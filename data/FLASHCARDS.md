@@ -404,3 +404,11 @@ offered for the next commit. That is not a commit, and it is not a push.
 `.gitignore` is the file with the rule, `1` is the line number, `*.log` is the
 pattern that matched, and `scratch.log` is the file Git is ignoring.
 </details>
+
+**48. Does a `.gitignore` rule ignore the `.gitignore` file itself?** `concept`
+<details><summary>Answer</summary>
+
+Only if a pattern matches that file's name. `*.log` does not match `.gitignore`.
+`?? .gitignore` means Git is offering the rules file for a commit. Committing
+it is how the rules travel with the repo.
+</details>
