@@ -4,7 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say what the sandbox `.gitignore` demo showed.
+- **Exact next step:** Say what happened to `output.log` in the sandbox demo:
+  whether it is still on disk, and whether anything was committed or pushed.
 
 
 ## Lesson status
@@ -82,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
