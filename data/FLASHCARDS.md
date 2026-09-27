@@ -397,3 +397,10 @@ you have checked out. `git log` marks that commit with `(HEAD -> main)`.
 The file stays on disk. Git stops listing it in `git status`, so it is not
 offered for the next commit. That is not a commit, and it is not a push.
 </details>
+
+**47. What does `git check-ignore -v scratch.log` printing `.gitignore:1:*.log scratch.log` mean?** `command`
+<details><summary>Answer</summary>
+
+`.gitignore` is the file with the rule, `1` is the line number, `*.log` is the
+pattern that matched, and `scratch.log` is the file Git is ignoring.
+</details>
