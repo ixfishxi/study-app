@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** In `practice`, create `scratch.log`, then predict
-  what `git status --short` will print before any ignore rule.
+- **Exact next step:** Say which file `git status --short` will still list
+  after `.gitignore` contains `*.log`: `scratch.log` or `.gitignore`.
 
 
 ## Lesson status
@@ -83,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
