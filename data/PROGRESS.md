@@ -3,11 +3,12 @@
 ## Where you are
 
 - **Current lesson:** L1: Working tree, staging, and commits
-- **Status:** In progress (Predict, Perform, Verify passed; Explain remaining)
-- **Exact next step:** Start a new chat and type `/learn`. You'll finish Lesson 1
-  by explaining from memory `git diff` vs. `git diff --staged` and what a
-  commit contains (cards 33 and 42 are good review). `converter.py` is
-  intentionally left with one staged and one unstaged edit for this.
+- **Status:** Explain passed. Close-out still to do.
+- **Exact next step:** Predict what `git status` will print after you commit
+  only the staged edit in `converter.py` (`"""Test Comment."""`). Then, in
+  Cursor's Source Control panel, type a short message in the message box and
+  click Commit. Do not leave the box empty. Afterward, run `git status` and
+  compare it to your prediction.
 
 
 ## Lesson status
@@ -19,7 +20,7 @@ only when all four have dates.
 | Lesson | Status | E | P | Pf | V |
 |--------|--------|---|---|----|---|
 | L0 Git vs GitHub vs Cursor, first repo | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
-| L1 Working tree, staging, commits | In progress | | 2026-09-27 | 2026-09-27 | 2026-09-27 |
+| L1 Working tree, staging, commits | Close-out pending | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L2 History, HEAD, .gitignore | Not started | | | | |
 | L3 Requests and branches | Not started | | | | |
 | L4 Local merge and first conflict | Not started | | | | |
