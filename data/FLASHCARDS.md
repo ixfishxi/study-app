@@ -412,3 +412,18 @@ Only if a pattern matches that file's name. `*.log` does not match `.gitignore`.
 `?? .gitignore` means Git is offering the rules file for a commit. Committing
 it is how the rules travel with the repo.
 </details>
+
+**49. Why doesn't a new `.gitignore` rule hide edits to a file that is already committed?** `concept`
+<details><summary>Answer</summary>
+
+Ignore rules apply to untracked files. A tracked file stays in `git status`
+when it changes. `git check-ignore` prints nothing for it.
+</details>
+
+**50. What does `git rm --cached <file>` do?** `command`
+<details><summary>Answer</summary>
+
+It takes the file out of the next commit and leaves it on disk. Older commits
+still contain it. Status shows a staged removal, such as `D  note.txt`. After
+that, a matching ignore rule can keep the file out of later commits.
+</details>
