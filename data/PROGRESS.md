@@ -4,11 +4,10 @@
 
 - **Current lesson:** L1: Working tree, staging, and commits
 - **Status:** Explain passed. Close-out still to do.
-- **Exact next step:** Predict what `git status` will print after you commit
-  only the staged edit in `converter.py` (`"""Test Comment."""`). Then, in
-  Cursor's Source Control panel, type a short message in the message box and
-  click Commit. Do not leave the box empty. Afterward, run `git status` and
-  compare it to your prediction.
+- **Exact next step:** In Cursor's Source Control panel, stage the remaining
+  `converter.py` edit with `+`, type a short message in the message box, and
+  click Commit. Do not leave the box empty, and do not use `git commit` in
+  the terminal for this one. Then run `git status` and paste it.
 
 
 ## Lesson status
