@@ -4,8 +4,7 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Run `git check-ignore -v scratch.log` in `practice`
-  and paste the output.
+- **Exact next step:** Say what `.gitignore:1:*.log scratch.log` proves.
 
 
 ## Lesson status
