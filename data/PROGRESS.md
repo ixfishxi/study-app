@@ -4,7 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say what `.gitignore:1:*.log scratch.log` proves.
+- **Exact next step:** Say whether `?? .gitignore` means Git is offering that
+  file for a commit.
 
 
 ## Lesson status
@@ -82,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
