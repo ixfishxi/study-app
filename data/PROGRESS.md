@@ -4,9 +4,8 @@
 
 - **Current lesson:** L1: Working tree, staging, and commits
 - **Status:** Explain passed. Close-out still to do.
-- **Exact next step:** Say how you can prove `"""Test Comment 2."""` is in
-  the repository. `git status` is already clean. Then decide whether those
-  two test comments stay in `converter.py`.
+- **Exact next step:** Decide whether the two test comments in `converter.py`
+  stay in the project. They are already committed (`2c7f2a3` and `e55589d`).
 
 
 ## Lesson status
