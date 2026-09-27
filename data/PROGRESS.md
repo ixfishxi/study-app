@@ -4,8 +4,10 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say whether `?? .gitignore` means Git is offering that
-  file for a commit.
+- **Exact next step:** Independent exercise. Run `python -m unittest` so
+  `__pycache__` appears, create a fake `.env` containing
+  `API_KEY=not-a-real-key`, keep both out of Git, commit the ignore rules,
+  and prove both are ignored.
 
 
 ## Lesson status
