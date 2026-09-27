@@ -365,3 +365,13 @@ or "changes."
 
 The metadata is the label on the album page; the snapshot is the photo itself.
 </details>
+
+## L2: History, HEAD, and .gitignore
+
+**43. What is the `index 112149e..e53287c 100644` line in `git show`?** `message`
+<details><summary>Answer</summary>
+
+It is part of the diff, not the parent commit. The two short IDs are the old
+and new versions of that one file, and `100644` is the file mode. The parent
+is the previous commit, the one directly under this one in `git log`.
+</details>
