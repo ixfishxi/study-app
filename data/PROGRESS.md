@@ -2,10 +2,10 @@
 
 ## Where you are
 
-- **Current lesson:** L1: Working tree, staging, and commits
-- **Status:** Explain passed. Close-out still to do.
-- **Exact next step:** Decide whether the two test comments in `converter.py`
-  stay in the project. They are already committed (`2c7f2a3` and `e55589d`).
+- **Current lesson:** L2: History, HEAD, and .gitignore
+- **Status:** Not started
+- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 2.
+  You will inspect one commit in the terminal and in Cursor.
 
 
 ## Lesson status
@@ -17,7 +17,7 @@ only when all four have dates.
 | Lesson | Status | E | P | Pf | V |
 |--------|--------|---|---|----|---|
 | L0 Git vs GitHub vs Cursor, first repo | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
-| L1 Working tree, staging, commits | Close-out pending | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
+| L1 Working tree, staging, commits | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L2 History, HEAD, .gitignore | Not started | | | | |
 | L3 Requests and branches | Not started | | | | |
 | L4 Local merge and first conflict | Not started | | | | |
@@ -83,10 +83,6 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
-- **Kept private**
-- **Kept private**
-- **Kept private**
-- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
