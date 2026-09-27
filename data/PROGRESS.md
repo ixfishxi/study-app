@@ -4,8 +4,7 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say what `HEAD` points to, including the commit that
-  is checked out.
+- **Exact next step:** Say what the sandbox `.gitignore` demo showed.
 
 
 ## Lesson status
