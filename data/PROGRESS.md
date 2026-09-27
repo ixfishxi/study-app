@@ -3,9 +3,9 @@
 ## Where you are
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
-- **Status:** Not started
-- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 2.
-  You will inspect one commit in the terminal and in Cursor.
+- **Status:** In progress
+- **Exact next step:** Name the parent of `e55589d` (CommitingConvert2) from
+  `git log`. The `index` line in `git show` is not the parent.
 
 
 ## Lesson status
@@ -83,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
