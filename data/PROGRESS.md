@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Name the parent of `e55589d` (CommitingConvert2) from
-  `git log`. The `index` line in `git show` is not the parent.
+- **Exact next step:** Inspect `e55589d` in Cursor's Source Control graph
+  (and the file Timeline for `converter.py`) and compare it to `git show HEAD`.
 
 
 ## Lesson status
