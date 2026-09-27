@@ -1,0 +1,1520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git Flash Cards: Successive Relearning</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --panel: #ffffff; --text: #1c2230; --muted: #667085; --border: #e2e5eb;
+    --accent: #3a66f0; --accent-weak: #e9eefd; --good: #16875a; --good-weak: #e2f4ea;
+    --bad: #c9432f; --bad-weak: #fbeae6; --warn: #a86a12; --warn-weak: #fcf1dc;
+    --code: #eef1f5; --shadow: 0 1px 2px rgba(16,24,40,.06), 0 4px 16px rgba(16,24,40,.06);
+    --s-new: #8a94a6; --s-learning: #d08a1a; --s-verified: #3a66f0; --s-maintenance: #16875a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11141a; --panel: #1a1e26; --text: #e5e8ee; --muted: #98a1b0; --border: #2a303b;
+      --accent: #6e91ff; --accent-weak: #1f2944; --good: #3cbf83; --good-weak: #14302a;
+      --bad: #f0735f; --bad-weak: #3b1f1b; --warn: #e3a94c; --warn-weak: #3a2d16;
+      --code: #252b36; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+      --s-new: #7d8799; --s-learning: #e3a94c; --s-verified: #6e91ff; --s-maintenance: #3cbf83;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  code { font-family: Consolas, "Cascadia Mono", ui-monospace, monospace; font-size: .92em;
+    background: var(--code); padding: .1em .35em; border-radius: 4px; }
+  a { color: var(--accent); }
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; padding: 10px 20px; flex-wrap: wrap; }
+  header.bar h1 { font-size: 16px; margin: 0; font-weight: 650; cursor: pointer; }
+  header.bar .status { color: var(--muted); font-size: 13px; }
+  header.bar .status.err { color: var(--bad); }
+  header.bar .spacer { flex: 1; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+  .sim { background: var(--warn-weak); color: var(--warn); padding: 8px 20px; font-size: 13px; text-align: center; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow);
+    padding: 20px; margin-bottom: 18px; }
+  .panel h2 { font-size: 15px; margin: 0 0 12px; font-weight: 650; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+  button, .btn { font: inherit; border: 1px solid var(--border); background: var(--panel); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.good { background: var(--good); border-color: var(--good); color: #fff; font-weight: 600; }
+  button.bad { background: var(--bad); border-color: var(--bad); color: #fff; font-weight: 600; }
+  button.link { border: none; background: none; color: var(--accent); padding: 4px 6px; }
+  button.big { padding: 12px 22px; font-size: 16px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .stat .n { font-size: 26px; font-weight: 700; line-height: 1.1; }
+  .stat .l { color: var(--muted); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border);
+    color: var(--muted); white-space: nowrap; }
+  .badge.new { color: var(--s-new); border-color: var(--s-new); }
+  .badge.learning { color: var(--s-learning); border-color: var(--s-learning); }
+  .badge.verified { color: var(--s-verified); border-color: var(--s-verified); }
+  .badge.maintenance { color: var(--s-maintenance); border-color: var(--s-maintenance); }
+  .badge.trouble { color: var(--bad); border-color: var(--bad); }
+  .badge.edited { color: var(--warn); border-color: var(--warn); }
+  .badge.tag { background: var(--code); border-color: transparent; }
+  .forecast { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding-top: 10px; }
+  .forecast .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .forecast .barv { width: 100%; max-width: 34px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; opacity: .85; }
+  .forecast .barv.zero { background: var(--border); }
+  .forecast .cnt { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  .forecast .d { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .cal { display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; grid-auto-columns: 13px; gap: 3px; }
+  .cal .c { width: 13px; height: 13px; border-radius: 3px; background: var(--border); }
+  .cal .c.on { background: var(--good); }
+  .cal .c.today { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .cal .c.future { background: transparent; }
+  .progress { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--good); transition: width .25s; }
+  .card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .question { font-size: 21px; font-weight: 600; line-height: 1.4; margin: 6px 0 16px; }
+  textarea { width: 100%; min-height: 120px; font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; resize: vertical; }
+  textarea:focus { outline: 2px solid var(--accent-weak); border-color: var(--accent); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  @media (max-width: 720px) { .compare { grid-template-columns: 1fr; } }
+  .compare > div { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--bg); }
+  .compare h3 { margin: 0 0 6px; font-size: 12.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .typed { white-space: pre-wrap; }
+  .answer p { margin: 0 0 .6em; } .answer p:last-child { margin-bottom: 0; }
+  .answer ul, .answer ol { margin: 0 0 .6em; padding-left: 1.4em; }
+  .rule { background: var(--accent-weak); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 14px; }
+  .notice { background: var(--warn-weak); color: var(--text); border-left: 3px solid var(--warn); border-radius: 6px;
+    padding: 8px 12px; margin-bottom: 12px; font-size: 13.5px; }
+  .error { background: var(--bad-weak); border-left: 3px solid var(--bad); border-radius: 6px; padding: 8px 12px; margin: 10px 0; }
+  .kbd { font-family: Consolas, ui-monospace, monospace; font-size: 11.5px; border: 1px solid var(--border);
+    border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--muted); }
+  details.method summary { cursor: pointer; font-weight: 600; }
+  details.method li { margin-bottom: 4px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } }
+  .hist { font-size: 13px; color: var(--muted); }
+  .hist .pass { color: var(--good); } .hist .miss { color: var(--bad); }
+  tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--bg); }
+  input[type=number], select, input[type=search] { font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
+  input[type=number] { width: 72px; }
+  .center { text-align: center; }
+  .hidden { display: none !important; }
+  nav.tabs { display: flex; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+  nav.tabs button { border: none; background: none; padding: 5px 12px; border-radius: 7px; font-size: 14px; color: var(--muted); }
+  nav.tabs button.active { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: var(--shadow); }
+  .overview { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  .ring { --p: 0; width: 120px; height: 120px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: conic-gradient(var(--good) calc(var(--p) * 1%), var(--border) 0); }
+  .ring > div { width: 94px; height: 94px; border-radius: 50%; background: var(--panel); display: grid; place-items: center; text-align: center; }
+  .ring .pct { font-size: 26px; font-weight: 700; line-height: 1; }
+  .ring .cap { font-size: 11.5px; color: var(--muted); }
+  .overview .stats { flex: 1; margin: 0; min-width: 260px; }
+  .gates { display: inline-flex; gap: 4px; }
+  .gate { font-size: 11.5px; font-weight: 600; min-width: 26px; text-align: center; padding: 1px 5px; border-radius: 5px;
+    border: 1px solid var(--border); color: var(--muted); }
+  .gate.on { background: var(--good); border-color: var(--good); color: #fff; }
+  .mini { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; min-width: 80px; }
+  .mini > div { height: 100%; background: var(--accent); }
+  tr.current td { background: var(--accent-weak); }
+  .next-step { border-left: 3px solid var(--accent); background: var(--accent-weak); border-radius: 6px; padding: 10px 12px; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1 data-action="home">Git Flash Cards</h1>
+  <nav class="tabs hidden" id="tabs">
+    <button data-action="home" data-tab="dashboard">Flash cards</button>
+    <button data-action="course" data-tab="course" id="courseTab">Course</button>
+    <button data-action="browser" data-tab="browser">All cards</button>
+  </nav>
+  <span class="status" id="source"></span>
+  <span class="spacer"></span>
+  <span class="status" id="saveStatus"></span>
+  <button class="link hidden" id="navReload" data-action="reload">Reload files</button>
+</header>
+<div class="sim hidden" id="simBanner"></div>
+<main id="main"></main>
+<input type="file" id="deckInput" accept=".md,text/markdown,text/plain" class="hidden">
+<input type="file" id="importInput" accept=".json,application/json" class="hidden">
+
+<script>
+"use strict";
+
+// ---------- Constants ----------
+const INTERVALS = [1, 3, 7, 14, 30, 60, 120];
+const VERIFY_STREAK = 3;
+const TROUBLE_MISSES = 3;
+const MAINTENANCE_DAYS = 30;
+const DECK_FILE = "FLASHCARDS.md";
+const PROGRESS_FILE = "flashcards-progress.json";
+const COURSE_PROGRESS_FILE = "PROGRESS.md";
+const COURSE_FILE = "COURSE.md";
+// The deck and study history live in study/; the course files live one level up, in the course folder.
+const STUDY_DIR = "study";
+const REFRESH_MS = 15000;
+const GATES = [["E", "Explain"], ["P", "Predict"], ["Pf", "Perform"], ["V", "Verify"]];
+// The cloud copy lives in a private GitHub repo with the same layout as the course folder.
+// study/sync-cloud.ps1 uploads the course files to it after each lesson.
+const CLOUD_REPO = "ixfishxi/git-course-study";
+const CLOUD_API = `https://api.github.com/repos/${CLOUD_REPO}/contents/`;
+const CLOUD_PATHS = {
+  [DECK_FILE]: `${STUDY_DIR}/${DECK_FILE}`, [PROGRESS_FILE]: `${STUDY_DIR}/${PROGRESS_FILE}`,
+  [COURSE_PROGRESS_FILE]: COURSE_PROGRESS_FILE, [COURSE_FILE]: COURSE_FILE,
+};
+// Grading several cards in a row becomes one save instead of one per card.
+const CLOUD_SAVE_DELAY_MS = 4000;
+// GitHub's pre-filled token form: name, owner, a year's expiry, and Contents: Read and write already set.
+const TOKEN_FORM_URL = "https://github.com/settings/personal-access-tokens/new"
+  + `?name=study+app&description=Lets+study.html+read+and+save+the+Git+course+files`
+  + `&target_name=${CLOUD_REPO.split("/")[0]}&expires_in=366&contents=write`;
+
+const params = new URLSearchParams(location.search);
+const SIM_DAY = /^\d{4}-\d{2}-\d{2}$/.test(params.get("today") || "") ? params.get("today") : null;
+const LS_PROGRESS = "gitcards.progress";
+const LS_PROGRESS_SIM = "gitcards.progress.sim";
+const LS_DECK = "gitcards.deck";
+const LS_COURSE = "gitcards.course";
+const LS_TOKEN = "gitcards.githubToken";
+const FS_SUPPORTED = "showDirectoryPicker" in window;
+
+const app = {
+  deck: [], byId: new Map(), lessons: [], warnings: [],
+  course: null, texts: {}, openLesson: null, refreshing: false,
+  progress: null, dir: null, deckDir: null, courseDir: null, savedHandle: null, source: "none",
+  screen: "connect", revealed: false, cantRecall: false, typed: "",
+  undo: null, browserFilter: "all", browserSearch: "", openRow: null, connectError: "",
+};
+
+// ---------- Small utilities ----------
+const $ = (sel) => document.querySelector(sel);
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fnv1a(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+// ---------- Days ----------
+// A study "day" starts at dayStartsHour (default 4 AM), so a late-night session counts as the same day.
+function localKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function today() {
+  if (SIM_DAY) return SIM_DAY;
+  const h = app.progress?.settings?.dayStartsHour ?? 4;
+  return localKey(new Date(Date.now() - h * 3600e3));
+}
+function keyToUTC(k) { const [y, m, d] = k.split("-").map(Number); return Date.UTC(y, m - 1, d); }
+function addDays(k, n) { return new Date(keyToUTC(k) + n * 864e5).toISOString().slice(0, 10); }
+function diffDays(a, b) { return Math.round((keyToUTC(b) - keyToUTC(a)) / 864e5); }
+function prettyDay(k) {
+  const d = diffDays(today(), k);
+  if (d === 0) return "today";
+  if (d === 1) return "tomorrow";
+  if (d === -1) return "yesterday";
+  const dt = new Date(keyToUTC(k));
+  const s = dt.toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
+  return d < 0 ? `${s} (overdue)` : s;
+}
+
+// ---------- Parsing FLASHCARDS.md ----------
+// Card format: "**N. Question** `tag` `tag`" followed by <details><summary>Answer</summary> ... </details>.
+// N is the card's permanent identity in the progress file, so cards must never be renumbered.
+function parseDeck(md) {
+  const lines = md.replace(/\r\n?/g, "\n").split("\n");
+  const cards = [], lessons = [], warnings = [], seen = new Set();
+  const head = /^\*\*(\d+)\.\s+(.*)\*\*\s*((?:`[^`]+`\s*)*)$/;
+  let lesson = "Unsorted", cur = null, inAnswer = false, buf = [];
+
+  const finish = () => {
+    while (buf.length && !buf[0].trim()) buf.shift();
+    while (buf.length && !buf[buf.length - 1].trim()) buf.pop();
+    cur.answer = buf.join("\n");
+    cur.hash = fnv1a(cur.question + "\n" + cur.answer);
+    if (seen.has(cur.id)) warnings.push(`Card number ${cur.id} appears more than once; only the first copy is used.`);
+    else { seen.add(cur.id); cards.push(cur); }
+    cur = null; inAnswer = false; buf = [];
+  };
+
+  for (const line of lines) {
+    if (inAnswer) {
+      const end = line.indexOf("</details>");
+      if (end >= 0) { if (line.slice(0, end).trim()) buf.push(line.slice(0, end)); finish(); }
+      else buf.push(line);
+      continue;
+    }
+    const h2 = line.match(/^##\s+(.+?)\s*$/);
+    if (h2) { lesson = h2[1]; if (!lessons.includes(lesson)) lessons.push(lesson); continue; }
+    const m = line.match(head);
+    if (m) {
+      if (cur) warnings.push(`Card ${cur.id} has no <details> answer block, so it was skipped.`);
+      cur = { id: m[1], num: Number(m[1]), question: m[2].trim(), lesson,
+        tags: [...m[3].matchAll(/`([^`]+)`/g)].map((x) => x[1]) };
+      continue;
+    }
+    if (cur && /<details>/i.test(line)) {
+      inAnswer = true; buf = [];
+      const after = line.replace(/.*<\/summary>/i, "").replace(/.*<details>/i, "");
+      if (after.includes("</details>")) { buf.push(after.slice(0, after.indexOf("</details>"))); finish(); }
+      else if (after.trim()) buf.push(after);
+    }
+  }
+  if (cur) warnings.push(`Card ${cur.id} has no closing </details>, so it was skipped.`);
+  if (inAnswer) warnings.push("The file ends inside an answer block.");
+  cards.sort((a, b) => a.num - b.num);
+  return { cards, lessons: lessons.filter((l) => cards.some((c) => c.lesson === l)), warnings };
+}
+
+// ---------- Minimal markdown renderer (bold, italics, inline code, lists, paragraphs) ----------
+function inline(s) {
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  s = esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*\w])\*(?!\s)(.+?)\*(?!\*)/g, "$1<em>$2</em>");
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
+}
+function renderMd(md) {
+  let html = "", para = [], list = null;
+  const flushPara = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
+  const flushList = () => {
+    if (list) { html += `<${list.type}>${list.items.map((i) => `<li>${inline(i)}</li>`).join("")}</${list.type}>`; list = null; }
+  };
+  for (const raw of md.split("\n")) {
+    const line = raw.trim();
+    let m;
+    if (!line) { flushPara(); flushList(); continue; }
+    if ((m = line.match(/^[-*]\s+(.*)$/)) || (m = line.match(/^\d+\.\s+(.*)$/))) {
+      const type = /^\d/.test(line) ? "ol" : "ul";
+      flushPara();
+      if (!list || list.type !== type) { flushList(); list = { type, items: [] }; }
+      list.items.push(m[1]);
+      continue;
+    }
+    if (list && /^\s{2,}/.test(raw)) { list.items[list.items.length - 1] += " " + line; continue; }
+    flushList(); para.push(line);
+  }
+  flushPara(); flushList();
+  return html;
+}
+
+// ---------- Course plan (PROGRESS.md + COURSE.md) ----------
+// Lessons are matched across files by key: "L0".."L59" and "Capstone". Every lesson counts
+// toward the completion percentage.
+function lessonKey(name) {
+  const s = String(name || "").trim();
+  const m = s.match(/^(L\d+)\b/i);
+  if (m) return m[1].toUpperCase();
+  if (/^capstone/i.test(s)) return "Capstone";
+  return null;
+}
+
+function parseCourseProgress(md) {
+  const out = { current: "", status: "", nextStep: "", rows: [], mistakes: 0 };
+  const fields = { "current lesson": "current", "status": "status", "exact next step": "nextStep" };
+  let section = "", field = null;
+  for (const line of md.replace(/\r\n?/g, "\n").split("\n")) {
+    const h = line.match(/^##\s+(.+?)\s*$/);
+    if (h) { section = h[1].toLowerCase(); field = null; continue; }
+    if (section === "where you are") {
+      const f = line.match(/^-\s+\*\*(.+?):\*\*\s*(.*)$/);
+      if (f) { field = fields[f[1].toLowerCase()] || null; if (field) out[field] = f[2].trim(); continue; }
+      if (field && /^\s{2,}\S/.test(line)) { out[field] += " " + line.trim(); continue; }
+      field = null;
+    } else if (section === "lesson status" && line.startsWith("|")) {
+      const cells = line.split("|").slice(1, -1).map((c) => c.trim());
+      if (cells.length < 6 || /^:?-+:?$/.test(cells[0]) || cells[0].toLowerCase() === "lesson") continue;
+      const key = lessonKey(cells[0]);
+      if (!key) continue;
+      out.rows.push({ key, name: cells[0], status: cells[1], gates: { E: cells[2], P: cells[3], Pf: cells[4], V: cells[5] } });
+    } else if (section === "mistakes to revisit" && /^-\s+\*\*/.test(line)) {
+      out.mistakes++;
+    }
+  }
+  return out;
+}
+
+function parseCoursePlan(md) {
+  const lessons = {};
+  let cur = null, inObjectives = false;
+  for (const line of md.replace(/\r\n?/g, "\n").split("\n")) {
+    const h3 = line.match(/^###\s+(.+?)\s*$/);
+    if (h3) {
+      const key = lessonKey(h3[1]);
+      cur = key ? (lessons[key] = { title: h3[1].replace(/^L\d+:\s*/i, ""), subtitle: "", objectives: [] }) : null;
+      inObjectives = false;
+      continue;
+    }
+    if (/^##\s/.test(line)) { cur = null; continue; }
+    if (!cur) continue;
+    const sub = line.match(/^\*([^*].*)\*\s*$/);
+    if (sub && !cur.subtitle && !cur.objectives.length) { cur.subtitle = sub[1]; continue; }
+    if (/^\*\*Objectives\*\*/.test(line)) { inObjectives = true; continue; }
+    if (!inObjectives) continue;
+    const b = line.match(/^-\s+(.*)$/);
+    if (b) cur.objectives.push(b[1]);
+    else if (/^\s{2,}\S/.test(line) && cur.objectives.length) cur.objectives[cur.objectives.length - 1] += " " + line.trim();
+    else if (line.trim()) inObjectives = false;
+  }
+  return lessons;
+}
+
+function loadCourse(progressMd, courseMd) {
+  app.texts.courseProgress = progressMd;
+  app.texts.course = courseMd;
+  app.course = {
+    progress: progressMd ? parseCourseProgress(progressMd) : null,
+    plan: courseMd ? parseCoursePlan(courseMd) : {},
+  };
+  if (progressMd) { try { localStorage.setItem(LS_COURSE, JSON.stringify({ progressMd, courseMd })); } catch {} }
+}
+
+function loadCachedCourse() {
+  const c = readLS(LS_COURSE);
+  if (c) { loadCourse(c.progressMd, c.courseMd); app.course.cached = true; }
+}
+
+// Parts 2-10 by lesson number. Part 1 is L0-L15 and the Capstone.
+const LATER_PARTS = [
+  { part: 2, from: 16, title: "Part 2: Cursor's AI tools",
+    why: "Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request." },
+  { part: 3, from: 22, title: "Part 3: Directing an agent",
+    why: "A clear request, an approved plan, and one request per chat decide most of what the agent gets right." },
+  { part: 4, from: 26, title: "Part 4: Checking and correcting agent work",
+    why: "“Finished” from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence." },
+  { part: 5, from: 31, title: "Part 5: The project brain",
+    why: "What should outlast a chat goes in committed files, before any work runs in a copy." },
+  { part: 6, from: 33, title: "Part 6: Code you didn't write",
+    why: "Most real work is in code someone else wrote. Learn it and pin down its behavior before you change it." },
+  { part: 7, from: 35, title: "Part 7: A repo that stands on its own",
+    why: "Every copy starts from what's committed. The repo must set itself up and check itself without your machine." },
+  { part: 8, from: 38, title: "Part 8: Isolated copies",
+    why: "Each request gets its own copy, so your folder and <code>main</code> stay as they are until you accept the work." },
+  { part: 9, from: 45, title: "Part 9: Planning and parallel work",
+    why: "Bigger and parallel work collides in ways a single request never does." },
+  { part: 10, from: 49, title: "Part 10: Tools, guardrails, and automation",
+    why: "More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off." },
+];
+
+function coursePart(key) {
+  const m = /^L(\d+)$/i.exec(key || "");
+  const n = m ? Number(m[1]) : -1;
+  let part = 1;
+  for (const p of LATER_PARTS) if (n >= p.from) part = p.part;
+  return part;
+}
+
+function gateStats(rows) {
+  const gatesDone = rows.reduce((n, r) => n + GATES.filter(([g]) => r.gates[g]).length, 0);
+  const gatesTotal = rows.length * GATES.length;
+  const mastered = rows.filter((r) => GATES.every(([g]) => r.gates[g])).length;
+  return { gatesDone, gatesTotal, mastered, lessons: rows.length, pct: gatesTotal ? Math.round((gatesDone / gatesTotal) * 100) : 0 };
+}
+
+function courseSummary() {
+  const p = app.course?.progress;
+  if (!p) return null;
+  const required = p.rows;
+  const core = required.filter((r) => coursePart(r.key) === 1);
+  const later = LATER_PARTS.map((lp) => {
+    const rows = required.filter((r) => coursePart(r.key) === lp.part);
+    return { ...lp, rows, stats: gateStats(rows) };
+  });
+  const lastLesson = Math.max(0, ...required.map((r) => Number((/^L(\d+)$/.exec(r.key) || [])[1] || 0)));
+  return { required, core, coreStats: gateStats(core), later, lastLesson, ...gateStats(required) };
+}
+
+function partProgress(st) {
+  return `${st.gatesDone} / ${st.gatesTotal} gates &middot; ${st.mastered} of ${st.lessons} lesson${st.lessons === 1 ? "" : "s"} mastered`;
+}
+
+// ---------- Progress storage ----------
+function blankProgress() {
+  return { version: 1, settings: { newPerDay: 10, dayStartsHour: 4 }, cards: {}, daysStudied: [], session: null, updatedAt: null };
+}
+function normalize(p) {
+  const b = blankProgress();
+  if (!p || typeof p !== "object") return b;
+  return { ...b, ...p, settings: { ...b.settings, ...(p.settings || {}) }, cards: p.cards || {}, daysStudied: p.daysStudied || [] };
+}
+function readLS(key) { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch { return null; } }
+function newer(a, b) {
+  if (!a) return b; if (!b) return a;
+  return (a.updatedAt || "") >= (b.updatedAt || "") ? a : b;
+}
+function chooseProgress(fileP) {
+  const real = newer(fileP, readLS(LS_PROGRESS));
+  if (SIM_DAY) return normalize(readLS(LS_PROGRESS_SIM) || structuredClone(real));
+  return normalize(real);
+}
+
+let saveChain = Promise.resolve();
+function setSaveStatus(text, isErr) {
+  const el = $("#saveStatus"); el.textContent = text; el.classList.toggle("err", !!isErr);
+}
+function clockTime() { return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+function save() {
+  app.progress.updatedAt = new Date().toISOString();
+  const json = JSON.stringify(app.progress, null, 2);
+  try { localStorage.setItem(SIM_DAY ? LS_PROGRESS_SIM : LS_PROGRESS, json); } catch {}
+  if (SIM_DAY) { setSaveStatus("Simulation: saved to separate browser storage only"); return saveChain; }
+  if (app.source === "cloud") { scheduleCloudSave(); setSaveStatus("Saving to GitHub…"); return saveChain; }
+  if (!app.dir) { setSaveStatus("Saved in browser storage"); return saveChain; }
+  const dir = app.deckDir;
+  saveChain = saveChain.then(async () => {
+    const fh = await dir.getFileHandle(PROGRESS_FILE, { create: true });
+    const w = await fh.createWritable();
+    await w.write(json);
+    await w.close();
+    setSaveStatus(`Saved to ${PROGRESS_FILE} at ${clockTime()}`);
+  }).catch((err) => setSaveStatus(`Could not write ${PROGRESS_FILE} (${err.message}). Progress is kept in browser storage.`, true));
+  return saveChain;
+}
+
+// ---------- Cloud (GitHub) storage ----------
+function decodeBase64Utf8(b64) {
+  const bin = atob(String(b64 || "").replace(/\s/g, ""));
+  return new TextDecoder().decode(Uint8Array.from(bin, (ch) => ch.charCodeAt(0)));
+}
+function encodeUtf8Base64(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+async function cloudError(r) {
+  if (r.status === 401) return "GitHub rejected the token. It may have expired or been revoked; paste a new one.";
+  if (r.status === 403) return `The token isn't allowed to do that. Edit it on GitHub: under Permissions, on the Repositories tab, set Contents to Read and write for ${CLOUD_REPO}.`;
+  let msg = "";
+  try { msg = (await r.json()).message || ""; } catch {}
+  return `GitHub returned ${r.status}${msg ? `: ${msg}` : ""}`;
+}
+
+async function githubFetch(url, options) {
+  try { return await fetch(url, options); }
+  catch { throw new Error("Couldn't reach api.github.com. Check the internet connection, and that no browser shield or extension blocks that site."); }
+}
+
+// A private repo answers "not found" for every access problem, so work out which one it is.
+async function diagnoseCloudAccess() {
+  const token = cloud.token();
+  const owner = CLOUD_REPO.split("/")[0];
+  const repoName = CLOUD_REPO.split("/")[1];
+  const userRes = await githubFetch("https://api.github.com/user", { cache: "no-store", headers: cloud.headers() });
+  if (userRes.status === 401) return "GitHub doesn't recognize this token. It may be mistyped, expired, or deleted. Paste it again, or make a new one.";
+  if (!userRes.ok) return `GitHub returned ${userRes.status} when checking the token.`;
+  const login = (await userRes.json()).login || "";
+  if (login.toLowerCase() !== owner.toLowerCase()) {
+    return `This token belongs to the GitHub account "${login}", but the course repo belongs to "${owner}". Make the token while signed in to GitHub as ${owner}.`;
+  }
+  if (token.startsWith("ghp_")) {
+    const scopes = (userRes.headers.get("X-OAuth-Scopes") || "").split(/,\s*/);
+    if (!scopes.includes("repo")) return `This is a classic token without the "repo" scope, so it can't see private repositories. Make a fine-grained token instead (steps below).`;
+  }
+  const repoRes = await githubFetch(`https://api.github.com/repos/${CLOUD_REPO}`, { cache: "no-store", headers: cloud.headers() });
+  if (repoRes.status === 404) {
+    return `The token works, but it wasn't given access to ${repoName}. On GitHub, edit the token: under Repository access, choose "Only select repositories" and pick ${repoName} ("Public repositories" can't see private repos). Then, under Permissions on the Repositories tab, add Contents with Read and write. Save, then click Connect again. The token text stays the same.`;
+  }
+  if (!repoRes.ok) return `GitHub returned ${repoRes.status} when checking access to ${CLOUD_REPO}.`;
+  return `The token can see ${repoName} but not its files. On GitHub, edit the token: under Permissions, on the Repositories tab (not Account), click Add permissions, add Contents, and set it to Read and write. Save, then click Connect again. The token text stays the same.`;
+}
+
+const cloud = {
+  // Per path: the ETag (so unchanged files cost nothing to re-check), the blob sha (needed to save), and the text.
+  cache: {},
+  token() { return localStorage.getItem(LS_TOKEN) || ""; },
+  headers(extra = {}) {
+    return { Authorization: `Bearer ${this.token()}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...extra };
+  },
+  async read(name) {
+    const path = CLOUD_PATHS[name];
+    const c = this.cache[path];
+    const r = await githubFetch(CLOUD_API + path, { cache: "no-store", headers: this.headers(c?.etag ? { "If-None-Match": c.etag } : {}) });
+    if (r.status === 304 && c) return c.text;
+    // A private repo also answers 404 when the token can't see it; useCloud reports that case.
+    if (r.status === 404) { this.cache[path] = { etag: null, sha: null, text: null }; return null; }
+    if (!r.ok) throw new Error(await cloudError(r));
+    const j = await r.json();
+    const text = decodeBase64Utf8(j.content);
+    this.cache[path] = { etag: r.headers.get("ETag"), sha: j.sha, text };
+    return text;
+  },
+  // Returns false when the cloud copy changed since it was last read (409/422), so the caller can reconcile.
+  async write(name, text) {
+    const path = CLOUD_PATHS[name];
+    const body = { message: `Update ${path} from study.html`, content: encodeUtf8Base64(text) };
+    const sha = this.cache[path]?.sha;
+    if (sha) body.sha = sha;
+    const r = await githubFetch(CLOUD_API + path, { method: "PUT", headers: this.headers({ "Content-Type": "application/json" }), body: JSON.stringify(body) });
+    if (r.status === 409 || r.status === 422) return false;
+    if (!r.ok) throw new Error(await cloudError(r));
+    const j = await r.json();
+    this.cache[path] = { etag: null, sha: j.content.sha, text };
+    return true;
+  },
+};
+
+let cloudSaveTimer = null;
+function scheduleCloudSave() {
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(flushCloudSave, CLOUD_SAVE_DELAY_MS);
+}
+function flushCloudSave() {
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = null;
+  saveChain = saveChain.then(async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (await cloud.write(PROGRESS_FILE, JSON.stringify(app.progress, null, 2))) {
+        setSaveStatus(`Saved to GitHub at ${clockTime()}`);
+        return;
+      }
+      // Another browser saved in between. The newer copy wins, the same rule used for browser storage.
+      const text = await cloud.read(PROGRESS_FILE);
+      const remote = text ? JSON.parse(text) : null;
+      if (remote && newer(remote, app.progress) === remote && remote.updatedAt !== app.progress.updatedAt) {
+        adoptProgress(remote);
+        setSaveStatus("Loaded newer progress saved from another browser");
+        return;
+      }
+    }
+    throw new Error("the cloud copy kept changing while saving");
+  }).catch((err) => setSaveStatus(`Could not save to GitHub (${err.message}). Progress is kept in this browser and saved next time.`, true));
+  return saveChain;
+}
+
+function adoptProgress(p) {
+  app.progress = normalize(p);
+  try { localStorage.setItem(LS_PROGRESS, JSON.stringify(app.progress, null, 2)); } catch {}
+  reconcileDeck();
+  ensureSession();
+  if (app.screen !== "study") render();
+}
+
+async function useCloud() {
+  const [md, progressText, courseProgress, course] =
+    await Promise.all([DECK_FILE, PROGRESS_FILE, COURSE_PROGRESS_FILE, COURSE_FILE].map((n) => cloud.read(n)));
+  if (md == null) throw new Error(await diagnoseCloudAccess());
+  let cloudP = null;
+  if (progressText) {
+    try { cloudP = JSON.parse(progressText); }
+    catch { app.warnings.push(`The cloud copy of ${PROGRESS_FILE} could not be read, so progress was restored from browser storage. The unreadable version stays in the repo's history.`); }
+  }
+  app.source = "cloud";
+  loadDeck(md);
+  loadCourse(courseProgress, course);
+  app.progress = chooseProgress(cloudP);
+  finishLoad();
+}
+
+// IndexedDB keeps the folder handle between visits (localStorage can't store handles).
+const idb = {
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open("gitcards", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("kv");
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+  },
+  async get(k) {
+    const db = await this.open();
+    return new Promise((res, rej) => { const q = db.transaction("kv").objectStore("kv").get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+  },
+  async set(k, v) {
+    const db = await this.open();
+    return new Promise((res, rej) => { const tx = db.transaction("kv", "readwrite"); tx.objectStore("kv").put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); });
+  },
+};
+
+async function readText(dir, name) {
+  try { return await (await (await dir.getFileHandle(name)).getFile()).text(); }
+  catch (e) { if (e.name === "NotFoundError") return null; throw e; }
+}
+
+async function subdir(dir, name) {
+  try { return await dir.getDirectoryHandle(name); }
+  catch (e) { if (e.name === "NotFoundError" || e.name === "TypeMismatchError") return null; throw e; }
+}
+
+// Accepts either the course folder (deck in study/, course files alongside) or the study folder itself.
+async function useFolder(dir) {
+  const study = await subdir(dir, STUDY_DIR);
+  const deckDir = study && (await readText(study, DECK_FILE)) != null ? study : dir;
+  const md = await readText(deckDir, DECK_FILE);
+  if (md == null) throw new Error(`That folder has no ${STUDY_DIR}/${DECK_FILE}. Pick the "Git Workflow Lab" folder.`);
+  const progressText = await readText(deckDir, PROGRESS_FILE);
+  let fileP = null;
+  if (progressText) {
+    try { fileP = JSON.parse(progressText); }
+    catch {
+      const backup = `flashcards-progress.unreadable-${Date.now()}.json`;
+      const fh = await deckDir.getFileHandle(backup, { create: true });
+      const w = await fh.createWritable(); await w.write(progressText); await w.close();
+      app.warnings.push(`${PROGRESS_FILE} could not be read, so it was copied to ${backup} and progress was restored from browser storage.`);
+    }
+  }
+  app.dir = dir; app.deckDir = deckDir; app.courseDir = dir; app.savedHandle = dir; app.source = "folder";
+  await idb.set("dir", dir).catch(() => {});
+  loadDeck(md);
+  loadCourse(await readText(dir, COURSE_PROGRESS_FILE), await readText(dir, COURSE_FILE));
+  app.progress = chooseProgress(fileP);
+  finishLoad();
+}
+
+function loadDeck(md) {
+  app.texts.deck = md;
+  const parsed = parseDeck(md);
+  app.deck = parsed.cards;
+  app.lessons = parsed.lessons;
+  app.byId = new Map(parsed.cards.map((c) => [c.id, c]));
+  app.warnings = app.warnings.filter((w) => !w.startsWith("Card ")).concat(parsed.warnings);
+  try { localStorage.setItem(LS_DECK, md); } catch {}
+}
+
+function reconcileDeck() {
+  const t = today();
+  for (const c of app.deck) {
+    const s = app.progress.cards[c.id];
+    if (s && s.hash !== c.hash) { s.hash = c.hash; s.editedOn = t; }
+  }
+}
+
+function finishLoad() {
+  reconcileDeck();
+  ensureSession();
+  save();
+  showScreen("dashboard");
+}
+
+function canReadSources() { return !!app.dir || app.source === "server" || app.source === "cloud"; }
+
+// Over HTTP this page is served from study/, so the course files are one level up.
+async function readSource(name) {
+  const isDeck = name === DECK_FILE;
+  if (app.source === "cloud") return cloud.read(name);
+  if (app.dir) return readText(isDeck ? app.deckDir : app.courseDir, name);
+  const r = await fetch(isDeck ? name : `../${name}`, { cache: "no-store" });
+  return r.ok ? r.text() : null;
+}
+
+// Re-reads the flash cards and the course files; returns true if anything changed.
+async function refreshSources(force = false) {
+  if (!canReadSources() || app.refreshing) return false;
+  app.refreshing = true;
+  try {
+    const [deck, courseProgress, course] = await Promise.all([DECK_FILE, COURSE_PROGRESS_FILE, COURSE_FILE].map(readSource));
+    let changed = false;
+    if (deck != null && (force || deck !== app.texts.deck)) {
+      loadDeck(deck); reconcileDeck(); ensureSession(); save();
+      changed = true;
+    }
+    if (force || courseProgress !== app.texts.courseProgress || course !== app.texts.course) {
+      loadCourse(courseProgress, course);
+      changed = true;
+    }
+    // Pick up reviews saved from another browser, but never mid-card or over an unsaved change.
+    if (app.source === "cloud" && !cloudSaveTimer && app.screen !== "study") {
+      const text = await cloud.read(PROGRESS_FILE);
+      const remote = text ? JSON.parse(text) : null;
+      if (remote && newer(remote, app.progress) === remote && remote.updatedAt !== app.progress.updatedAt) {
+        adoptProgress(remote);
+        changed = true;
+      }
+    }
+    return changed;
+  } catch (e) {
+    setSaveStatus(`Could not re-read the course files: ${e.message}`, true);
+    return false;
+  } finally { app.refreshing = false; }
+}
+
+// Re-render after a background refresh, except mid-card, where it would disrupt typing.
+async function backgroundRefresh() {
+  if (document.hidden || app.source === "none") return;
+  if (!canReadSources()) {
+    if (app.progress.session.day !== today()) { ensureSession(); if (app.screen !== "study") render(); }
+    return;
+  }
+  const changed = await refreshSources();
+  if (app.screen === "study") {
+    if (app.progress.session.day !== today()) { ensureSession(); showScreen("dashboard"); }
+    return;
+  }
+  if (changed || app.progress.session.day !== today()) { ensureSession(); render(); }
+}
+
+// ---------- Scheduling: successive relearning ----------
+function cardState(id) { return app.progress.cards[id]; }
+function statusOf(id) {
+  const s = cardState(id);
+  if (!s) return "new";
+  if ((s.streak || 0) >= VERIFY_STREAK) return s.intervalDays >= MAINTENANCE_DAYS ? "maintenance" : "verified";
+  return "learning";
+}
+function isTrouble(id) {
+  const s = cardState(id);
+  return !!s && s.coldMisses >= TROUBLE_MISSES && statusOf(id) === "learning";
+}
+const STATUS_LABEL = { new: "New", learning: "Learning", verified: "Verified", maintenance: "Maintenance" };
+
+function newLimit(s) { return app.progress.settings.newPerDay + (s.extraNew || 0); }
+
+function ensureSession() {
+  const t = today();
+  let s = app.progress.session;
+  if (!s || s.day !== t) {
+    s = { day: t, queue: [], done: [], attempts: {}, newAdded: 0, extraNew: 0 };
+    app.progress.session = s;
+  }
+  s.queue = s.queue.filter((id) => app.byId.has(id));
+  const inQueue = new Set(s.queue);
+  const due = app.deck.filter((c) => { const st = cardState(c.id); return st && st.due <= t && !inQueue.has(c.id); }).map((c) => c.id);
+  const fresh = app.deck.filter((c) => !cardState(c.id) && !inQueue.has(c.id)).map((c) => c.id)
+    .slice(0, Math.max(0, newLimit(s) - s.newAdded));
+  s.newAdded += fresh.length;
+  // Reviews go before new cards so a batch of new cards never crowds out due reviews.
+  const firstNew = s.queue.findIndex((id) => !cardState(id));
+  const head = firstNew < 0 ? s.queue : s.queue.slice(0, firstNew);
+  const tail = firstNew < 0 ? [] : s.queue.slice(firstNew);
+  const current = s.queue[0];
+  s.queue = [...head, ...shuffle(due), ...tail, ...fresh];
+  if (current && s.queue[0] !== current) s.queue = [current, ...s.queue.filter((id) => id !== current)];
+  return s;
+}
+
+function grade(correct) {
+  const s = app.progress.session;
+  const id = s.queue[0];
+  const card = app.byId.get(id);
+  const t = s.day;
+  app.undo = { progress: JSON.stringify(app.progress) };
+  const first = !(id in s.attempts);
+  s.attempts[id] = (s.attempts[id] || 0) + 1;
+  let st = cardState(id);
+
+  if (first) {
+    if (!st) {
+      // Initial learning day: recall to criterion, but it doesn't count as a cold verification.
+      st = app.progress.cards[id] = {
+        hash: card.hash, introduced: t, step: 0, intervalDays: INTERVALS[0], due: addDays(t, INTERVALS[0]),
+        streak: 0, coldPasses: 0, coldMisses: 0, lastDay: t, history: [],
+      };
+      st.history.push({ day: t, type: "learn", attempts: 1 });
+    } else {
+      const late = Math.max(0, diffDays(st.due, t));
+      if (correct) {
+        st.coldPasses++; st.streak++;
+        st.step = Math.min(st.step + 1, INTERVALS.length - 1);
+        st.intervalDays = INTERVALS[st.step];
+        if (st.streak === VERIFY_STREAK) st.verifiedOn = t;
+        st.history.push({ day: t, type: "pass", attempts: 1, ...(late ? { daysLate: late } : {}) });
+      } else {
+        st.coldMisses++; st.streak = 0; st.step = 0; st.intervalDays = INTERVALS[0];
+        const entry = { day: t, type: "miss", attempts: 1, ...(late ? { daysLate: late } : {}) };
+        if (app.typed.trim()) entry.typed = app.typed.trim().slice(0, 600);
+        st.history.push(entry);
+      }
+      st.due = addDays(t, st.intervalDays);
+      st.lastDay = t;
+      delete st.editedOn;
+    }
+  } else {
+    const h = st.history[st.history.length - 1];
+    if (h && h.day === t) h.attempts++;
+  }
+
+  s.queue.shift();
+  if (correct) s.done.push(id);
+  else s.queue.push(id);
+  if (!app.progress.daysStudied.includes(t)) app.progress.daysStudied.push(t);
+  save();
+  app.revealed = false; app.cantRecall = false; app.typed = "";
+  showScreen(s.queue.length ? "study" : "summary");
+}
+
+function undoGrade() {
+  if (!app.undo) return;
+  app.progress = normalize(JSON.parse(app.undo.progress));
+  app.undo = null;
+  save();
+  app.revealed = false; app.cantRecall = false; app.typed = "";
+  showScreen("study");
+}
+
+function forecast(days) {
+  const t = today(), out = [];
+  for (let i = 0; i < days; i++) out.push({ day: addDays(t, i), n: 0 });
+  const s = app.progress.session;
+  for (const c of app.deck) {
+    const st = cardState(c.id);
+    if (!st) continue;
+    let d = st.due < t ? t : st.due;
+    if (s.queue.includes(c.id)) d = t;
+    const idx = diffDays(t, d);
+    if (idx >= 0 && idx < days) out[idx].n++;
+  }
+  return out;
+}
+
+function todaysEntries() {
+  const t = today(), out = [];
+  for (const c of app.deck) {
+    const st = cardState(c.id);
+    if (!st) continue;
+    for (const h of st.history) if (h.day === t) out.push({ id: c.id, ...h });
+  }
+  return out;
+}
+
+// ---------- Screens ----------
+function showScreen(name) {
+  app.screen = name;
+  if (name !== "study") { app.revealed = false; app.cantRecall = false; }
+  render();
+  window.scrollTo(0, 0);
+}
+
+function render() {
+  const connected = app.source !== "none";
+  $("#tabs").classList.toggle("hidden", !connected);
+  $("#navReload").classList.toggle("hidden", !connected);
+  const activeTab = app.screen === "study" || app.screen === "summary" ? "dashboard" : app.screen;
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === activeTab));
+  const cs = connected ? courseSummary() : null;
+  $("#courseTab").textContent = cs ? `Course ${cs.pct}%` : "Course";
+  $("#source").textContent = {
+    cloud: `Cloud: ${CLOUD_REPO}`,
+    folder: `Folder: ${app.dir?.name || ""}`, server: "Served over HTTP (read-only cards)",
+    file: "Browser storage only", cache: "Cached cards (browser storage only)", none: "",
+  }[app.source];
+  const sim = $("#simBanner");
+  sim.classList.toggle("hidden", !SIM_DAY);
+  if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
+  const main = $("#main");
+  if (app.screen === "connect") main.innerHTML = viewConnect();
+  else if (app.screen === "dashboard") main.innerHTML = viewDashboard();
+  else if (app.screen === "study") { main.innerHTML = viewStudy(); afterStudyRender(); }
+  else if (app.screen === "summary") main.innerHTML = viewSummary();
+  else if (app.screen === "browser") main.innerHTML = viewBrowser();
+  else if (app.screen === "course") main.innerHTML = viewCourse();
+}
+
+function viewConnect() {
+  const cached = !!localStorage.getItem(LS_DECK);
+  const handleName = app.savedHandle?.name;
+  return `
+  <div class="panel">
+    <h2>Connect to your course</h2>
+    <p>This app reads your flash cards and course progress from the private GitHub repository
+      <code>${CLOUD_REPO}</code> and saves your study history there, so it works the same in any browser:
+      Chrome, Brave, Edge, Firefox, or Safari.</p>
+    ${app.connectError ? `<div class="error">${esc(app.connectError)}</div>` : ""}
+    <div class="row" style="margin:14px 0">
+      <label style="flex:1;min-width:260px">GitHub token
+        <input type="password" id="tokenInput" autocomplete="off" spellcheck="false" style="width:100%"
+          placeholder="${localStorage.getItem(LS_TOKEN) ? "Saved token will be used. Paste a new one to replace it." : "github_pat_…"}"></label>
+      <button class="primary big" data-action="connectCloud">Connect</button>
+    </div>
+    <details class="method">
+      <summary>Make the token (once; the same token works in every browser)</summary>
+      <ol class="small">
+        <li>Open <a href="${TOKEN_FORM_URL}" target="_blank" rel="noopener">this pre-filled token form</a>, signed in to GitHub as
+          <strong>${esc(CLOUD_REPO.split("/")[0])}</strong>. It fills in the name, a one-year expiration, and the <strong>Contents: Read and write</strong> permission.</li>
+        <li>Under <strong>Repository access</strong>, choose <strong>Only select repositories</strong>, open <strong>Select repositories</strong>,
+          and pick <strong>git-course-study</strong>. This is the one setting the link can't fill in.</li>
+        <li>Check that <strong>Permissions</strong> lists <strong>Contents</strong> with <strong>Read and write</strong>, then click <strong>Generate token</strong>.</li>
+        <li>Copy the token and paste it above.</li>
+      </ol>
+      <p class="small">Already made a token that doesn't work? It's quickest to make a new one with the link above, then delete the old one on
+        <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">GitHub &rsaquo; Settings &rsaquo; Fine-grained tokens</a>.</p>
+      <p class="muted small">The token is stored only in this browser and can only reach that one repository.
+        Remove it any time with "Forget GitHub token" under Settings.</p>
+    </details>
+  </div>
+  <details class="panel">
+    <summary><strong>Other ways to open the cards</strong> <span class="muted small">(no cross-browser sync)</span></summary>
+    <p class="small">These read the course folder on this computer instead of the cloud.</p>
+    ${FS_SUPPORTED ? `
+      <div class="row" style="margin:14px 0">
+        ${handleName ? `<button class="primary big" data-action="reconnect">Reconnect to ${esc(handleName)}</button>` : ""}
+        <button class="${handleName ? "" : "primary big"}" data-action="connect">Open course folder</button>
+      </div>
+      <p class="muted small">Pick the <strong>Git Workflow Lab</strong> folder and allow editing when the browser asks.
+        The browser asks for permission again on each visit; that's one click on "Reconnect".</p>`
+    : `<div class="notice">This browser can't write files. Open this page in Microsoft Edge or Google Chrome to save progress
+        into the course folder. You can still study here; progress stays in this browser, and you can export it.</div>`}
+    <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
+    <div class="row">
+      <button data-action="pickDeck">Open ${DECK_FILE} only (browser storage)</button>
+      ${cached ? `<button data-action="useCache">Use the last cards loaded</button>` : ""}
+    </div>
+  </details>`;
+}
+
+function viewDashboard() {
+  const s = ensureSession();
+  const t = today();
+  const counts = { new: 0, learning: 0, verified: 0, maintenance: 0 };
+  for (const c of app.deck) counts[statusOf(c.id)]++;
+  const reviewsLeft = s.queue.filter((id) => cardState(id)).length;
+  const newLeft = s.queue.filter((id) => !cardState(id)).length;
+  const newRemaining = app.deck.filter((c) => !cardState(c.id) && !s.queue.includes(c.id)).length;
+  const started = s.done.length > 0 || Object.keys(s.attempts).length > 0;
+  const trouble = app.deck.filter((c) => isTrouble(c.id));
+  const edited = app.deck.filter((c) => cardState(c.id)?.editedOn);
+  const orphans = Object.keys(app.progress.cards).filter((id) => !app.byId.has(id));
+
+  let next = "";
+  if (!s.queue.length) {
+    const f = forecast(400).find((x) => x.day > t && x.n > 0);
+    next = f ? `Next cards are due ${prettyDay(f.day)} (${f.n}).` : "No reviews are scheduled yet.";
+  }
+
+  const fc = forecast(14), max = Math.max(1, ...fc.map((x) => x.n));
+  const bars = fc.map((x, i) => `
+    <div class="col" title="${x.day}: ${x.n} card${x.n === 1 ? "" : "s"}">
+      <div class="cnt">${x.n || ""}</div>
+      <div class="barv ${x.n ? "" : "zero"}" style="height:${Math.max(2, (x.n / max) * 80)}px"></div>
+      <div class="d">${i === 0 ? "Today" : new Date(keyToUTC(x.day)).toLocaleDateString(undefined, { weekday: "narrow", timeZone: "UTC" })}</div>
+    </div>`).join("");
+
+  const lessonRows = app.lessons.map((l) => {
+    const ids = app.deck.filter((c) => c.lesson === l).map((c) => c.id);
+    const n = (st) => ids.filter((id) => statusOf(id) === st).length;
+    const tr = ids.filter(isTrouble).length;
+    return `<tr><td>${inline(l)}</td><td class="num">${ids.length}</td><td class="num">${n("new")}</td><td class="num">${n("learning")}</td>
+      <td class="num">${n("verified")}</td><td class="num">${n("maintenance")}</td><td class="num">${tr ? `<span class="badge trouble">${tr}</span>` : "0"}</td></tr>`;
+  }).join("");
+
+  return `
+  ${app.warnings.map((w) => `<div class="notice">${esc(w)}</div>`).join("")}
+  ${orphans.length ? `<div class="notice">${orphans.length} card${orphans.length === 1 ? " is" : "s are"} in your progress file but no longer in ${DECK_FILE} (#${orphans.join(", #")}). Their history is kept but they're hidden.</div>` : ""}
+  <div class="panel">
+    <div class="stats">
+      <div class="stat"><div class="n">${reviewsLeft}</div><div class="l">Reviews left today</div></div>
+      <div class="stat"><div class="n">${newLeft}</div><div class="l">New cards left today</div></div>
+      <div class="stat"><div class="n">${s.done.length}</div><div class="l">Cleared today</div></div>
+      <div class="stat"><div class="n">${counts.verified + counts.maintenance}<span class="muted" style="font-size:15px"> / ${app.deck.length}</span></div><div class="l">Verified or maintained</div></div>
+    </div>
+    ${s.queue.length
+      ? `<div class="row"><button class="primary big" data-action="study">${started ? "Continue today's session" : "Start today's session"}</button>
+         <span class="muted small">${s.queue.length} card${s.queue.length === 1 ? "" : "s"} to recall correctly once each.</span></div>`
+      : `<div class="row"><strong>${s.done.length ? "Today's session is complete." : "Nothing is due today."}</strong><span class="muted">${next}</span></div>`}
+    ${!s.queue.length && newRemaining ? `<div class="row" style="margin-top:12px">
+        <button data-action="moreNew">Add up to ${app.progress.settings.newPerDay} more new cards today</button>
+        <span class="muted small">${newRemaining} new card${newRemaining === 1 ? "" : "s"} waiting. Optional; spacing matters more than volume.</span></div>` : ""}
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Due in the next 14 days</h2>
+      <div class="forecast">${bars}</div>
+    </div>
+    <div class="panel">
+      <h2>Days studied</h2>
+      ${viewCalendar()}
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Progress by lesson</h2>
+    <table>
+      <thead><tr><th>Lesson</th><th class="num">Cards</th><th class="num">New</th><th class="num">Learning</th><th class="num">Verified</th><th class="num">Maintenance</th><th class="num">Trouble</th></tr></thead>
+      <tbody>${lessonRows || `<tr><td colspan="7" class="muted">No cards found.</td></tr>`}</tbody>
+    </table>
+  </div>
+
+  ${trouble.length ? `<div class="panel">
+    <h2>Trouble cards</h2>
+    <p class="muted small">Missed on the first try of the day ${TROUBLE_MISSES} or more times. Bring these to the instructor
+      (say "quiz me" or mention the card numbers); a card that keeps failing usually hides a misconception, not a memory problem.</p>
+    <table><tbody>${trouble.map((c) => `<tr><td class="num">#${c.num}</td><td>${inline(c.question)}</td><td class="num">${cardState(c.id).coldMisses} misses</td></tr>`).join("")}</tbody></table>
+  </div>` : ""}
+
+  ${edited.length ? `<div class="notice">Edited since last review: ${edited.map((c) => `#${c.num}`).join(", ")}. Schedules were kept; read the new answer carefully next time.</div>` : ""}
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>Settings</h2>
+      <div class="row" style="margin-bottom:10px"><label>New cards per day <input type="number" min="0" max="100" id="setNew" value="${app.progress.settings.newPerDay}"></label></div>
+      <div class="row" style="margin-bottom:14px"><label>New day starts at
+        <select id="setHour">${[0, 1, 2, 3, 4, 5, 6].map((h) => `<option value="${h}" ${h === app.progress.settings.dayStartsHour ? "selected" : ""}>${h === 0 ? "midnight" : h + " AM"}</option>`).join("")}</select></label></div>
+      <div class="row"><button data-action="export">Export progress</button><button data-action="import">Import progress</button>
+        ${app.source === "cloud" ? `<button data-action="forgetToken">Forget GitHub token</button>` : ""}</div>
+    </div>
+    <div class="panel">
+      <details class="method">
+        <summary>How this works (successive relearning)</summary>
+        <ul class="small">
+          <li><strong>Recall before you look.</strong> Type the answer from memory; the answer stays hidden until you've tried.</li>
+          <li><strong>Grade strictly.</strong> Only "I produced the idea" counts. "I recognized it" is Not yet.</li>
+          <li><strong>Recall each card once per session.</strong> Misses go to the back of the stack and come back until you get them.</li>
+          <li><strong>The first try of the day is the real test.</strong> Only it moves the schedule. Later retries don't count as passes.</li>
+          <li><strong>Spaced sessions.</strong> A pass on the first try pushes the card out: 1, 3, 7, 14, 30, 60, then 120 days. A miss brings it back tomorrow.</li>
+          <li><strong>Verified</strong> = ${VERIFY_STREAK} first-try passes in a row, on separate days. <strong>Maintenance</strong> = verified and reviewed only every month or more.</li>
+        </ul>
+      </details>
+    </div>
+  </div>`;
+}
+
+function viewCalendar() {
+  const t = today();
+  const studied = new Set(app.progress.daysStudied);
+  const weeks = 16;
+  const dow = new Date(keyToUTC(t)).getUTCDay();
+  const start = addDays(t, -(weeks - 1) * 7 - dow);
+  let cells = "";
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = addDays(start, i);
+    const cls = d > t ? "future" : studied.has(d) ? "on" : "";
+    cells += `<div class="c ${cls} ${d === t ? "today" : ""}" title="${d}${studied.has(d) ? ": studied" : ""}"></div>`;
+  }
+  let streak = 0;
+  let d = studied.has(t) ? t : addDays(t, -1);
+  while (studied.has(d)) { streak++; d = addDays(d, -1); }
+  const last30 = [...studied].filter((x) => diffDays(x, t) < 30 && x <= t).length;
+  return `<div class="cal">${cells}</div>
+    <p class="muted small" style="margin:10px 0 0">Current streak: <strong>${streak}</strong> day${streak === 1 ? "" : "s"}. Studied ${last30} of the last 30 days.</p>`;
+}
+
+function viewStudy() {
+  const s = app.progress.session;
+  const id = s.queue[0];
+  const card = app.byId.get(id);
+  const st = cardState(id);
+  const attempts = s.attempts[id] || 0;
+  const total = s.done.length + new Set(s.queue).size;
+  const pct = total ? Math.round((s.done.length / total) * 100) : 0;
+  const kind = !st && !attempts ? `<span class="badge new">New card</span>`
+    : attempts ? `<span class="badge learning">Try ${attempts + 1} today</span>`
+    : `<span class="badge verified">Review: first try today counts</span>`;
+  const onlyOne = new Set(s.queue).size === 1 && attempts > 0;
+
+  return `
+  <div class="row" style="margin-bottom:10px">
+    <div style="flex:1"><div class="progress"><div style="width:${pct}%"></div></div></div>
+    <span class="muted small">${s.done.length} of ${total} recalled today</span>
+  </div>
+  <div class="panel">
+    <div class="card-meta">
+      <span class="muted small">#${card.num} &middot; ${inline(card.lesson)}</span>
+      ${card.tags.map((t) => `<span class="badge tag">${esc(t)}</span>`).join("")}
+      ${kind}
+      ${st?.editedOn ? `<span class="badge edited">Edited</span>` : ""}
+    </div>
+    <div class="question">${inline(card.question)}</div>
+    ${!app.revealed ? `
+      ${onlyOne ? `<div class="notice">This is the last card left. Look away for a few seconds before you try again.</div>` : ""}
+      ${!st && !attempts ? `<p class="muted small">First time with this card: give it a real try from what you remember of the lesson, then study the answer.</p>` : ""}
+      <textarea id="answer" placeholder="Type your answer from memory. Your own words are fine.">${esc(app.typed)}</textarea>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="revealBtn" data-action="reveal" ${app.typed.trim() ? "" : "disabled"}>Reveal answer <span class="kbd">Ctrl+Enter</span></button>
+        <button data-action="cantRecall">I can't recall it</button>
+      </div>`
+    : `
+      <div class="compare">
+        <div><h3>Your answer</h3><div class="typed">${app.cantRecall ? `<span class="muted">Couldn't recall.</span>` : esc(app.typed)}</div></div>
+        <div><h3>Answer</h3><div class="answer">${renderMd(card.answer)}</div></div>
+      </div>
+      ${app.cantRecall ? `
+        <div class="rule">Read the answer closely, then say it back to yourself without looking. This card will come back later in this session.</div>
+        <div class="row"><button class="bad" data-action="gradeMiss">Not yet: bring it back <span class="kbd" style="color:#fff;border-color:rgba(255,255,255,.5)">1</span></button></div>`
+      : `
+        <div class="rule"><strong>Grade strictly.</strong> <em>Correct</em> means you produced the key idea yourself; different wording is fine.
+          Partly right, vague, or "I knew it once I saw it" is <em>Not yet</em>.</div>
+        <div class="row">
+          <button class="bad" data-action="gradeMiss">Not yet <span class="kbd" style="color:#fff;border-color:rgba(255,255,255,.5)">1</span></button>
+          <button class="good" data-action="gradePass">Correct <span class="kbd" style="color:#fff;border-color:rgba(255,255,255,.5)">2</span></button>
+        </div>`}`}
+  </div>
+  <div class="row">
+    <button class="link" data-action="home">Back to dashboard (progress is saved)</button>
+    ${app.undo ? `<button class="link" data-action="undo">Undo last grade</button>` : ""}
+  </div>`;
+}
+
+function afterStudyRender() {
+  const ta = $("#answer");
+  if (!ta) return;
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+  ta.addEventListener("input", () => { app.typed = ta.value; $("#revealBtn").disabled = !ta.value.trim(); });
+}
+
+function viewSummary() {
+  const entries = todaysEntries();
+  const cold = entries.filter((e) => e.type === "pass" || e.type === "miss");
+  const passes = cold.filter((e) => e.type === "pass");
+  const misses = cold.filter((e) => e.type === "miss");
+  const learned = entries.filter((e) => e.type === "learn");
+  const t = today();
+  const verifiedToday = app.deck.filter((c) => cardState(c.id)?.verifiedOn === t && statusOf(c.id) !== "learning");
+  const rate = cold.length ? Math.round((passes.length / cold.length) * 100) : null;
+  const tomorrow = forecast(2)[1]?.n ?? 0;
+  const q = (id) => { const c = app.byId.get(id); return `<td class="num">#${c.num}</td><td>${inline(c.question)}</td>`; };
+
+  return `
+  <div class="panel">
+    <h2>Session complete</h2>
+    <p>Every card in today's session was recalled correctly at least once. Coming back on another day is what makes it stick:
+      <strong>${tomorrow}</strong> card${tomorrow === 1 ? " is" : "s are"} due tomorrow.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">${rate == null ? "&ndash;" : rate + "%"}</div><div class="l">First-try pass rate on reviews</div></div>
+      <div class="stat"><div class="n">${passes.length}</div><div class="l">Passed on first try</div></div>
+      <div class="stat"><div class="n">${misses.length}</div><div class="l">Missed on first try</div></div>
+      <div class="stat"><div class="n">${learned.length}</div><div class="l">New cards learned</div></div>
+    </div>
+    ${verifiedToday.length ? `<h2>Reached Verified today</h2><table><tbody>${verifiedToday.map((c) => `<tr>${q(c.id)}</tr>`).join("")}</tbody></table><br>` : ""}
+    ${misses.length ? `<h2>Missed on the first try (the misses that matter)</h2>
+      <p class="muted small">These come back tomorrow. If one keeps failing, ask the instructor about it.</p>
+      <table><tbody>${misses.map((e) => `<tr>${q(e.id)}<td class="num">${e.attempts} tries</td></tr>`).join("")}</tbody></table>` : ""}
+    <div class="row" style="margin-top:16px"><button class="primary" data-action="home">Back to dashboard</button>
+      ${app.undo ? `<button class="link" data-action="undo">Undo last grade</button>` : ""}</div>
+  </div>`;
+}
+
+function viewBrowser() {
+  const f = app.browserFilter, q = app.browserSearch.toLowerCase();
+  const rows = app.deck.filter((c) => {
+    const stt = statusOf(c.id);
+    if (f === "trouble" ? !isTrouble(c.id) : f !== "all" && stt !== f) return false;
+    return !q || (c.question + " " + c.tags.join(" ") + " " + c.num).toLowerCase().includes(q);
+  });
+  const body = rows.map((c) => {
+    const st = cardState(c.id), stt = statusOf(c.id);
+    const open = app.openRow === c.id;
+    const hist = st ? st.history.map((h) => {
+      const label = h.type === "learn" ? "learned" : h.type === "pass" ? "first-try pass" : "first-try miss";
+      return `<div><span class="${h.type}">${h.day}: ${label}</span>${h.attempts > 1 ? `, ${h.attempts} tries` : ""}${h.daysLate ? `, ${h.daysLate} day${h.daysLate === 1 ? "" : "s"} late` : ""}${h.typed ? ` &middot; you wrote: "${esc(h.typed)}"` : ""}</div>`;
+    }).join("") : "Not studied yet.";
+    return `
+    <tr class="clickable" data-action="toggleRow" data-id="${c.id}">
+      <td class="num">#${c.num}</td><td>${inline(c.question)}</td>
+      <td><span class="badge ${stt}">${STATUS_LABEL[stt]}</span> ${isTrouble(c.id) ? `<span class="badge trouble">Trouble</span>` : ""} ${st?.editedOn ? `<span class="badge edited">Edited</span>` : ""}</td>
+      <td class="num">${st ? st.streak : "&ndash;"}</td>
+      <td>${st ? prettyDay(st.due) : "&ndash;"}</td>
+      <td class="num">${st ? `${st.coldPasses} / ${st.coldMisses}` : "&ndash;"}</td>
+    </tr>
+    ${open ? `<tr><td></td><td colspan="5">
+      <div class="small muted" style="margin-bottom:6px">${inline(c.lesson)} &middot; ${c.tags.map(esc).join(", ")}${st ? ` &middot; every ${st.intervalDays} day${st.intervalDays === 1 ? "" : "s"}` : ""}</div>
+      <details><summary class="small">Show answer</summary><div class="answer" style="margin:8px 0">${renderMd(c.answer)}</div></details>
+      <div class="hist" style="margin:8px 0">${hist}</div>
+      ${st ? `<button data-action="resetCard" data-id="${c.id}">Reset this card to New</button>` : ""}
+    </td></tr>` : ""}`;
+  }).join("");
+
+  return `
+  <div class="panel">
+    <div class="row" style="margin-bottom:12px">
+      <h2 style="margin:0;flex:1">All cards (${app.deck.length})</h2>
+      <select id="filter">${["all", "new", "learning", "verified", "maintenance", "trouble"].map((x) =>
+        `<option value="${x}" ${x === f ? "selected" : ""}>${x === "all" ? "All statuses" : x === "trouble" ? "Trouble" : STATUS_LABEL[x]}</option>`).join("")}</select>
+      <input type="search" id="search" placeholder="Search questions" value="${esc(app.browserSearch)}">
+    </div>
+    <table>
+      <thead><tr><th class="num">#</th><th>Question</th><th>Status</th><th class="num">Streak</th><th>Next due</th><th class="num">Passes / misses</th></tr></thead>
+      <tbody>${body || `<tr><td colspan="6" class="muted">No cards match.</td></tr>`}</tbody>
+    </table>
+    <p class="muted small" style="margin-bottom:0">Click a row for its history. Streak counts first-try passes in a row; ${VERIFY_STREAK} means Verified.</p>
+  </div>
+  <button class="link" data-action="home">Back to dashboard</button>`;
+}
+
+function cardStatsFor(key) {
+  const cards = key ? app.deck.filter((c) => lessonKey(c.lesson) === key) : app.deck;
+  const count = (st) => cards.filter((c) => statusOf(c.id) === st).length;
+  return {
+    total: cards.length, solid: count("verified") + count("maintenance"),
+    learning: count("learning"), fresh: count("new"), trouble: cards.filter((c) => isTrouble(c.id)).length,
+  };
+}
+
+const LESSON_STATUS_CLASS = { "not started": "new", "in progress": "learning", "needs review": "trouble", "mastered": "maintenance" };
+
+function viewCourse() {
+  const sum = courseSummary();
+  if (!sum) {
+    return `<div class="panel"><h2>Course progress</h2>
+      <p>Course progress is read from <code>${COURSE_PROGRESS_FILE}</code> and <code>${COURSE_FILE}</code> in the course folder.
+      ${app.source === "folder" ? `${COURSE_PROGRESS_FILE} wasn't found in this folder.` : "Connect the course folder to see it."}</p></div>`;
+  }
+  const { progress: p, plan } = app.course;
+  const cards = cardStatsFor(null);
+  const cardPct = cards.total ? Math.round((cards.solid / cards.total) * 100) : 0;
+  const currentKey = lessonKey(p.current);
+
+  const rowHtml = (r) => {
+    const info = plan[r.key] || {};
+    const cs = cardStatsFor(r.key);
+    const isCurrent = r.key === currentKey;
+    const label = /^L\d+$/.test(r.key)
+      ? `<strong>${r.key}</strong> ${inline(info.title || r.name.replace(/^L\d+\s*/i, ""))}`
+      : `<strong>${inline(r.name)}</strong>`;
+    const details = app.openLesson !== r.key ? "" : `
+      <tr><td colspan="4">
+        ${info.subtitle ? `<p class="muted small" style="margin:0 0 6px"><em>${inline(info.subtitle)}</em></p>` : ""}
+        ${info.objectives?.length ? `<div class="small"><strong>Objectives</strong><ul style="margin:4px 0 8px">${info.objectives.map((o) => `<li>${inline(o)}</li>`).join("")}</ul></div>` : ""}
+        <div class="small muted">${GATES.map(([g, name]) => `${name}: ${r.gates[g] ? esc(r.gates[g]) : "not yet"}`).join(" &middot; ")}</div>
+        <div class="small muted" style="margin-top:4px">${cs.total
+          ? `Flash cards: ${cs.solid} verified or maintained, ${cs.learning} learning, ${cs.fresh} new${cs.trouble ? `, ${cs.trouble} trouble` : ""}.`
+          : "No flash cards for this lesson yet. They're added as you reach each concept."}</div>
+      </td></tr>`;
+    return `
+      <tr class="clickable ${isCurrent ? "current" : ""}" data-action="toggleLesson" data-key="${esc(r.key)}">
+        <td>${label}${isCurrent ? ` <span class="badge verified">Current</span>` : ""}</td>
+        <td><span class="badge ${LESSON_STATUS_CLASS[r.status.toLowerCase()] || ""}">${esc(r.status || "Not started")}</span></td>
+        <td><span class="gates">${GATES.map(([g, name]) =>
+          `<span class="gate ${r.gates[g] ? "on" : ""}" title="${name}: ${r.gates[g] ? esc(r.gates[g]) : "not yet observed"}">${g}</span>`).join("")}</span></td>
+        <td>${cs.total
+          ? `<div class="row" style="gap:8px;flex-wrap:nowrap"><div class="mini" style="flex:1"><div style="width:${Math.round((cs.solid / cs.total) * 100)}%"></div></div>
+             <span class="small muted" style="white-space:nowrap">${cs.solid} / ${cs.total}</span></div>`
+          : `<span class="small muted">No cards yet</span>`}</td>
+      </tr>${details}`;
+  };
+
+  const table = (rows) => `<table>
+    <thead><tr><th>Lesson</th><th>Status</th><th>Gates</th><th style="min-width:150px">Flash cards verified</th></tr></thead>
+    <tbody>${rows.map(rowHtml).join("")}</tbody></table>`;
+
+  return `
+  ${app.course.cached ? `<div class="notice">Showing the course progress saved at your last folder connection. Connect the folder for live updates.</div>` : ""}
+  <div class="panel">
+    <div class="overview">
+      <div class="ring" style="--p:${sum.pct}"><div><div><div class="pct">${sum.pct}%</div><div class="cap">course complete</div></div></div></div>
+      <div class="stats">
+        <div class="stat"><div class="n">${sum.gatesDone}<span class="muted" style="font-size:15px"> / ${sum.gatesTotal}</span></div><div class="l">Mastery gates observed</div></div>
+        <div class="stat"><div class="n">${sum.mastered}<span class="muted" style="font-size:15px"> / ${sum.lessons}</span></div><div class="l">Lessons mastered</div></div>
+        <div class="stat"><div class="n">${cardPct}%</div><div class="l">Flash cards verified (${cards.solid} of ${cards.total})</div></div>
+        <div class="stat"><div class="n">${p.mistakes}</div><div class="l">Mistakes to revisit</div></div>
+      </div>
+    </div>
+    ${p.current || p.nextStep ? `<div class="next-step" style="margin-top:16px">
+      ${p.current ? `<div><strong>Current lesson:</strong> ${inline(p.current)}${p.status ? ` <span class="muted">(${esc(p.status)})</span>` : ""}</div>` : ""}
+      ${p.nextStep ? `<div style="margin-top:4px"><strong>Next step:</strong> ${inline(p.nextStep)}</div>` : ""}
+    </div>` : ""}
+  </div>
+
+  <div class="panel">
+    <h2>Part 1: Core Git workflow</h2>
+    <p class="muted small" style="margin-top:0">Git and GitHub by hand, from a request to a merged pull request, plus history cleanup, cherry-pick and stash, tags, and bisect. Everything later depends on it.</p>
+    <p class="small" style="margin-top:0"><strong>${sum.coreStats.pct}%</strong> <span class="muted">&middot; ${partProgress(sum.coreStats)}</span></p>
+    ${table(sum.core)}
+    <p class="muted small" style="margin-bottom:0">Click a lesson for its objectives, gate dates, and card breakdown.</p>
+  </div>
+
+  ${sum.later.filter((lp) => lp.rows.length).map((lp) => `<div class="panel"><h2>${lp.title}</h2>
+    <p class="muted small" style="margin-top:0">${lp.why}</p>
+    <p class="small" style="margin-top:0"><strong>${lp.stats.pct}%</strong> <span class="muted">&middot; ${partProgress(lp.stats)}</span></p>
+    ${table(lp.rows)}</div>`).join("\n")}
+
+  <p class="muted small">
+    <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0 to L${sum.lastLesson} and the Git capstone)
+    has four mastery gates (Explain, Predict, Perform, Verify), recorded with dates in <code>${COURSE_PROGRESS_FILE}</code>.
+    Course completion is gates observed out of ${sum.gatesTotal}; a lesson is Mastered when all four are observed.
+    Flash cards verified is cards with ${VERIFY_STREAK} first-try passes in a row, so it drops when new cards are added and rises as they stick.
+    Both update automatically every ${REFRESH_MS / 1000} seconds and when you return to this tab.
+  </p>`;
+}
+
+// ---------- Actions ----------
+const actions = {
+  home() { if (app.source !== "none") { ensureSession(); showScreen("dashboard"); } },
+  study() { ensureSession(); app.typed = ""; showScreen(app.progress.session.queue.length ? "study" : "summary"); },
+  browser() { showScreen("browser"); },
+  course() { showScreen("course"); },
+  toggleLesson(el) { app.openLesson = app.openLesson === el.dataset.key ? null : el.dataset.key; render(); },
+  reload() {
+    if (!canReadSources()) { if (app.source === "file") $("#deckInput").click(); return; }
+    refreshSources(true).then(() => { ensureSession(); render(); });
+  },
+  reveal() { if (!app.typed.trim()) return; app.revealed = true; app.cantRecall = false; render(); },
+  cantRecall() { app.revealed = true; app.cantRecall = true; render(); },
+  gradePass() { if (app.revealed && !app.cantRecall) grade(true); },
+  gradeMiss() { if (app.revealed) grade(false); },
+  undo() { undoGrade(); },
+  moreNew() {
+    const s = ensureSession();
+    s.extraNew = (s.extraNew || 0) + app.progress.settings.newPerDay;
+    ensureSession(); save(); render();
+  },
+  toggleRow(el) { app.openRow = app.openRow === el.dataset.id ? null : el.dataset.id; render(); },
+  resetCard(el, e) {
+    e.stopPropagation();
+    const id = el.dataset.id;
+    if (!confirm(`Reset card #${id} to New? Its history will be deleted.`)) return;
+    delete app.progress.cards[id];
+    const s = app.progress.session;
+    s.queue = s.queue.filter((x) => x !== id);
+    s.done = s.done.filter((x) => x !== id);
+    delete s.attempts[id];
+    save(); render();
+  },
+  export() {
+    const blob = new Blob([JSON.stringify(app.progress, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `flashcards-progress-${today()}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  },
+  import() { $("#importInput").click(); },
+  async connectCloud() {
+    const token = ($("#tokenInput")?.value || "").trim() || cloud.token();
+    if (!token) { app.connectError = "Paste your GitHub token first."; render(); return; }
+    localStorage.setItem(LS_TOKEN, token);
+    cloud.cache = {};
+    app.connectError = "";
+    setSaveStatus("Connecting to GitHub…");
+    try { await useCloud(); }
+    catch (e) { app.connectError = e.message; setSaveStatus(""); render(); }
+  },
+  async forgetToken() {
+    if (!confirm("Remove the GitHub token from this browser? Your progress stays in the cloud; paste the token again to reconnect.")) return;
+    if (cloudSaveTimer) await flushCloudSave();
+    localStorage.removeItem(LS_TOKEN);
+    location.reload();
+  },
+  async connect() {
+    try {
+      app.connectError = "";
+      const dir = await window.showDirectoryPicker({ id: "gitcards", mode: "readwrite" });
+      await useFolder(dir);
+    } catch (e) {
+      if (e.name === "AbortError") return;
+      app.connectError = e.message; render();
+    }
+  },
+  async reconnect() {
+    try {
+      app.connectError = "";
+      const h = app.savedHandle;
+      if ((await h.requestPermission({ mode: "readwrite" })) !== "granted") throw new Error("Permission was not granted.");
+      await useFolder(h);
+    } catch (e) { app.connectError = e.message; render(); }
+  },
+  pickDeck() { $("#deckInput").click(); },
+  useCache() {
+    loadDeck(localStorage.getItem(LS_DECK));
+    loadCachedCourse();
+    app.source = "cache";
+    app.progress = chooseProgress(null);
+    finishLoad();
+  },
+};
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action]");
+  if (!el || !actions[el.dataset.action]) return;
+  actions[el.dataset.action](el, e);
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.id === "tokenInput" && e.key === "Enter") { e.preventDefault(); actions.connectCloud(); return; }
+  if (app.screen !== "study") return;
+  if (!app.revealed && e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); actions.reveal(); return; }
+  if (app.revealed && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    if (e.key === "1") { e.preventDefault(); actions.gradeMiss(); }
+    else if (e.key === "2") { e.preventDefault(); actions.gradePass(); }
+  }
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target.id === "setNew") {
+    const v = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
+    app.progress.settings.newPerDay = v; ensureSession(); save(); render();
+  } else if (e.target.id === "setHour") {
+    app.progress.settings.dayStartsHour = Number(e.target.value); ensureSession(); save(); render();
+  } else if (e.target.id === "filter") {
+    app.browserFilter = e.target.value; app.openRow = null; render();
+  }
+});
+
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "search") return;
+  app.browserSearch = e.target.value;
+  const pos = e.target.selectionStart;
+  render();
+  const s = $("#search"); s.focus(); s.setSelectionRange(pos, pos);
+});
+
+$("#deckInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  loadDeck(await file.text());
+  if (app.source === "none") { app.source = "file"; loadCachedCourse(); app.progress = chooseProgress(null); finishLoad(); }
+  else { reconcileDeck(); ensureSession(); save(); render(); }
+});
+
+$("#importInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  try {
+    const p = JSON.parse(await file.text());
+    if (!p || typeof p.cards !== "object") throw new Error("That file doesn't look like flash card progress.");
+    if (!confirm("Replace your current progress with the imported file?")) return;
+    app.progress = normalize(p);
+    reconcileDeck(); ensureSession(); save(); render();
+  } catch (err) { alert(`Import failed: ${err.message}`); }
+});
+
+// Keep cards and course progress current as FLASHCARDS.md and PROGRESS.md change during lessons.
+document.addEventListener("visibilitychange", backgroundRefresh);
+setInterval(backgroundRefresh, REFRESH_MS);
+// Save right away when the tab is hidden or closed, instead of waiting out the batching delay.
+document.addEventListener("visibilitychange", () => { if (document.hidden && cloudSaveTimer) flushCloudSave(); });
+window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave(); });
+
+// ---------- Startup ----------
+async function init() {
+  if (cloud.token()) {
+    setSaveStatus("Loading from GitHub…");
+    try { await useCloud(); return; }
+    catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; setSaveStatus(""); }
+  } else if (FS_SUPPORTED) {
+    try {
+      const h = await idb.get("dir");
+      if (h) {
+        app.savedHandle = h;
+        if ((await h.queryPermission({ mode: "readwrite" })) === "granted") { await useFolder(h); return; }
+      }
+    } catch (e) { app.connectError = e.message; }
+  }
+  if (location.protocol.startsWith("http")) {
+    try {
+      const r = await fetch(DECK_FILE, { cache: "no-store" });
+      if (r.ok) {
+        loadDeck(await r.text());
+        app.source = "server";
+        loadCourse(await readSource(COURSE_PROGRESS_FILE), await readSource(COURSE_FILE));
+        app.progress = chooseProgress(null);
+        finishLoad();
+        return;
+      }
+    } catch {}
+  }
+  showScreen("connect");
+}
+init();
+</script>
+</body>
+</html>
