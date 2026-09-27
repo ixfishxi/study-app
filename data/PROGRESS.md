@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** In `sandbox`, run `git log --oneline` and say whether
-  `output.log` appears as a commit.
+- **Exact next step:** In `practice`, create `scratch.log`, then predict
+  what `git status --short` will print before any ignore rule.
 
 
 ## Lesson status
