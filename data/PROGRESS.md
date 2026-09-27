@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Predict whether an edit to an already committed file
-  still shows in `git status` after a `.gitignore` rule names that file.
+- **Exact next step:** Say what ` M note.txt` in the sandbox demo shows
+  about a `.gitignore` rule on a file that is already committed.
 
 
 ## Lesson status
@@ -83,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
