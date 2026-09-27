@@ -2,10 +2,10 @@
 
 ## Where you are
 
-- **Current lesson:** L2: History, HEAD, and .gitignore
-- **Status:** In progress
-- **Exact next step:** Predict whether `git status` still shows `note.txt`
-  after `git rm --cached note.txt` in `sandbox`. The file stays on disk.
+- **Current lesson:** L3: Defining the request, and branches as pointers
+- **Status:** Not started
+- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 3.
+  You will create a branch and watch the files on disk change when you switch.
 
 
 ## Lesson status
@@ -18,7 +18,7 @@ only when all four have dates.
 |--------|--------|---|---|----|---|
 | L0 Git vs GitHub vs Cursor, first repo | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L1 Working tree, staging, commits | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
-| L2 History, HEAD, .gitignore | Not started | | | | |
+| L2 History, HEAD, .gitignore | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L3 Requests and branches | Not started | | | | |
 | L4 Local merge and first conflict | Not started | | | | |
 | L5 Remotes, fetch vs pull | Not started | | | | |
