@@ -185,14 +185,22 @@ const LS_PROGRESS = "gitcards.progress";
 const LS_PROGRESS_SIM = "gitcards.progress.sim";
 const LS_DECK = "gitcards.deck";
 const LS_COURSE = "gitcards.course";
+// Older versions stored the token unencrypted under LS_TOKEN; it is sealed on the next unlock.
 const LS_TOKEN = "gitcards.githubToken";
+const LS_TOKEN_SEALED = "gitcards.githubToken.sealed";
+// The study password is never stored. The page keeps only this PBKDF2 check value, and the
+// GitHub token is saved encrypted with a key derived from the same password.
+const PASSWORD_SALT = "859b25d151b2948606402ef5d7fb718c";
+const PASSWORD_CHECK = "b5adc17936ea205d1c49579973679b242cf9af58daf0219c763822abf1d80838";
+const PASSWORD_ITERATIONS = 600000;
 const FS_SUPPORTED = "showDirectoryPicker" in window;
 
 const app = {
   deck: [], byId: new Map(), lessons: [], warnings: [],
   course: null, texts: {}, openLesson: null, refreshing: false,
   progress: null, dir: null, deckDir: null, courseDir: null, savedHandle: null, source: "none",
-  screen: "connect", revealed: false, cantRecall: false, typed: "",
+  screen: "unlock", key: null, token: "", unlockError: "", unlocking: false,
+  revealed: false, cantRecall: false, typed: "",
   undo: null, browserFilter: "all", browserSearch: "", openRow: null, connectError: "",
 };
 
@@ -508,6 +516,38 @@ async function cloudError(r) {
   return `GitHub returned ${r.status}${msg ? `: ${msg}` : ""}`;
 }
 
+// ---------- Study password ----------
+const hexToBytes = (hex) => Uint8Array.from(hex.match(/../g), (h) => parseInt(h, 16));
+const bytesToHex = (bytes) => Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+const bytesToB64 = (bytes) => btoa(String.fromCharCode(...bytes));
+const b64ToBytes = (b64) => Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0));
+
+// Returns the key that seals the saved token, or null when the password is wrong.
+async function unlockKey(password) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const params = { name: "PBKDF2", salt: hexToBytes(PASSWORD_SALT), iterations: PASSWORD_ITERATIONS, hash: "SHA-256" };
+  const bits = new Uint8Array(await crypto.subtle.deriveBits(params, base, 512));
+  if (bytesToHex(bits.slice(0, 32)) !== PASSWORD_CHECK) return null;
+  return crypto.subtle.importKey("raw", bits.slice(32), "AES-GCM", false, ["encrypt", "decrypt"]);
+}
+
+async function sealToken(token) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, app.key, new TextEncoder().encode(token)));
+  localStorage.setItem(LS_TOKEN_SEALED, JSON.stringify({ iv: bytesToB64(iv), data: bytesToB64(data) }));
+  localStorage.removeItem(LS_TOKEN);
+}
+
+async function openSealedToken() {
+  const raw = localStorage.getItem(LS_TOKEN_SEALED);
+  if (!raw) return "";
+  try {
+    const { iv, data } = JSON.parse(raw);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(iv) }, app.key, b64ToBytes(data));
+    return new TextDecoder().decode(plain);
+  } catch { return ""; }
+}
+
 async function githubFetch(url, options) {
   try { return await fetch(url, options); }
   catch { throw new Error("Couldn't reach api.github.com. Check the internet connection, and that no browser shield or extension blocks that site."); }
@@ -540,7 +580,7 @@ async function diagnoseCloudAccess() {
 const cloud = {
   // Per path: the ETag (so unchanged files cost nothing to re-check), the blob sha (needed to save), and the text.
   cache: {},
-  token() { return localStorage.getItem(LS_TOKEN) || ""; },
+  token() { return app.token || ""; },
   headers(extra = {}) {
     return { Authorization: `Bearer ${this.token()}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", ...extra };
   },
@@ -908,12 +948,26 @@ function render() {
   sim.classList.toggle("hidden", !SIM_DAY);
   if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
   const main = $("#main");
-  if (app.screen === "connect") main.innerHTML = viewConnect();
+  if (app.screen === "unlock") { main.innerHTML = viewUnlock(); if (!app.unlocking) $("#passwordInput")?.focus(); }
+  else if (app.screen === "connect") main.innerHTML = viewConnect();
   else if (app.screen === "dashboard") main.innerHTML = viewDashboard();
   else if (app.screen === "study") { main.innerHTML = viewStudy(); afterStudyRender(); }
   else if (app.screen === "summary") main.innerHTML = viewSummary();
   else if (app.screen === "browser") main.innerHTML = viewBrowser();
   else if (app.screen === "course") main.innerHTML = viewCourse();
+}
+
+function viewUnlock() {
+  return `
+  <div class="panel" style="max-width:440px;margin:40px auto">
+    <h2>Enter the study password</h2>
+    <p class="small muted">The password unlocks this browser's saved GitHub connection, so only you can study and change progress here.</p>
+    ${app.unlockError ? `<div class="error">${esc(app.unlockError)}</div>` : ""}
+    <div class="row" style="margin-top:12px;flex-wrap:nowrap">
+      <input type="password" id="passwordInput" inputmode="numeric" autocomplete="current-password" style="flex:1" ${app.unlocking ? "disabled" : ""}>
+      <button class="primary" data-action="unlock" ${app.unlocking ? "disabled" : ""}>${app.unlocking ? "Checking…" : "Unlock"}</button>
+    </div>
+  </div>`;
 }
 
 function viewConnect() {
@@ -929,7 +983,7 @@ function viewConnect() {
     <div class="row" style="margin:14px 0">
       <label style="flex:1;min-width:260px">GitHub token
         <input type="password" id="tokenInput" autocomplete="off" spellcheck="false" style="width:100%"
-          placeholder="${localStorage.getItem(LS_TOKEN) ? "Saved token will be used. Paste a new one to replace it." : "github_pat_…"}"></label>
+          placeholder="${app.token ? "Saved token will be used. Paste a new one to replace it." : "github_pat_…"}"></label>
       <button class="primary big" data-action="connectCloud">Connect</button>
     </div>
     <details class="method">
@@ -944,7 +998,7 @@ function viewConnect() {
       </ol>
       <p class="small">Already made a token that doesn't work? It's quickest to make a new one with the link above, then delete the old one on
         <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">GitHub &rsaquo; Settings &rsaquo; Fine-grained tokens</a>.</p>
-      <p class="muted small">The token is stored only in this browser and can only reach that one repository.
+      <p class="muted small">The token is stored only in this browser, encrypted with your study password, and can only reach that one repository.
         Remove it any time with "Forget GitHub token" under Settings.</p>
     </details>
   </div>
@@ -1376,10 +1430,24 @@ const actions = {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   },
   import() { $("#importInput").click(); },
+  async unlock() {
+    const password = $("#passwordInput")?.value || "";
+    if (!password) { app.unlockError = "Enter the password."; render(); return; }
+    app.unlockError = ""; app.unlocking = true; render();
+    const key = await unlockKey(password).catch(() => null);
+    app.unlocking = false;
+    if (!key) { app.unlockError = "That password isn't right."; render(); return; }
+    app.key = key;
+    const oldPlainToken = localStorage.getItem(LS_TOKEN);
+    if (oldPlainToken) await sealToken(oldPlainToken);
+    app.token = await openSealedToken();
+    await start();
+  },
   async connectCloud() {
     const token = ($("#tokenInput")?.value || "").trim() || cloud.token();
     if (!token) { app.connectError = "Paste your GitHub token first."; render(); return; }
-    localStorage.setItem(LS_TOKEN, token);
+    app.token = token;
+    await sealToken(token);
     cloud.cache = {};
     app.connectError = "";
     setSaveStatus("Connecting to GitHub…");
@@ -1389,6 +1457,7 @@ const actions = {
   async forgetToken() {
     if (!confirm("Remove the GitHub token from this browser? Your progress stays in the cloud; paste the token again to reconnect.")) return;
     if (cloudSaveTimer) await flushCloudSave();
+    localStorage.removeItem(LS_TOKEN_SEALED);
     localStorage.removeItem(LS_TOKEN);
     location.reload();
   },
@@ -1428,6 +1497,7 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.id === "tokenInput" && e.key === "Enter") { e.preventDefault(); actions.connectCloud(); return; }
+  if (e.target.id === "passwordInput" && e.key === "Enter") { e.preventDefault(); actions.unlock(); return; }
   if (app.screen !== "study") return;
   if (!app.revealed && e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); actions.reveal(); return; }
   if (app.revealed && !e.ctrlKey && !e.altKey && !e.metaKey) {
@@ -1485,7 +1555,8 @@ document.addEventListener("visibilitychange", () => { if (document.hidden && clo
 window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave(); });
 
 // ---------- Startup ----------
-async function init() {
+// Nothing loads until the study password is entered; unlock() then calls start().
+async function start() {
   if (cloud.token()) {
     setSaveStatus("Loading from GitHub…");
     try { await useCloud(); return; }
@@ -1514,7 +1585,7 @@ async function init() {
   }
   showScreen("connect");
 }
-init();
+showScreen("unlock");
 </script>
 </body>
 </html>
