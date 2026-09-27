@@ -193,13 +193,16 @@ const LS_TOKEN_SEALED = "gitcards.githubToken.sealed";
 const PASSWORD_SALT = "859b25d151b2948606402ef5d7fb718c";
 const PASSWORD_CHECK = "b5adc17936ea205d1c49579973679b242cf9af58daf0219c763822abf1d80838";
 const PASSWORD_ITERATIONS = 600000;
+// The GitHub token built into the page, sealed with the study password's key, so no browser
+// needs it pasted. A token saved in a browser is tried after it. null when none is built in.
+const EMBEDDED_TOKEN = { iv: "3qbXR+nTTLLtFdXC", data: "0vcF57HD+uf5BHVaXuRJIv/wRvNieXAPOVn2GSGD+F6hpO9mGYaqqeVRH6vfLZrv66mnAGbJLReSCKN4hdThgcXxq6/AL3Vy72myoYgWRxJ9ThCuLr4cL0lqAmKnfcW2Eope8uz6IP4YtMQneQ==" };
 const FS_SUPPORTED = "showDirectoryPicker" in window;
 
 const app = {
   deck: [], byId: new Map(), lessons: [], warnings: [],
   course: null, texts: {}, openLesson: null, refreshing: false,
   progress: null, dir: null, deckDir: null, courseDir: null, savedHandle: null, source: "none",
-  screen: "unlock", key: null, token: "", unlockError: "", unlocking: false,
+  screen: "unlock", key: null, token: "", tokens: [], unlockError: "", unlocking: false,
   revealed: false, cantRecall: false, typed: "",
   undo: null, browserFilter: "all", browserSearch: "", openRow: null, connectError: "",
 };
@@ -538,14 +541,17 @@ async function sealToken(token) {
   localStorage.removeItem(LS_TOKEN);
 }
 
-async function openSealedToken() {
-  const raw = localStorage.getItem(LS_TOKEN_SEALED);
-  if (!raw) return "";
+async function openSealed(sealed) {
+  if (!sealed) return "";
   try {
-    const { iv, data } = JSON.parse(raw);
-    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(iv) }, app.key, b64ToBytes(data));
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(sealed.iv) }, app.key, b64ToBytes(sealed.data));
     return new TextDecoder().decode(plain);
   } catch { return ""; }
+}
+
+async function openSealedToken() {
+  try { return await openSealed(JSON.parse(localStorage.getItem(LS_TOKEN_SEALED) || "null")); }
+  catch { return ""; }
 }
 
 async function githubFetch(url, options) {
@@ -1440,7 +1446,9 @@ const actions = {
     app.key = key;
     const oldPlainToken = localStorage.getItem(LS_TOKEN);
     if (oldPlainToken) await sealToken(oldPlainToken);
-    app.token = await openSealedToken();
+    const found = [await openSealed(EMBEDDED_TOKEN), await openSealedToken()];
+    app.tokens = found.filter((t, i) => t && found.indexOf(t) === i);
+    app.token = app.tokens[0] || "";
     await start();
   },
   async connectCloud() {
@@ -1557,10 +1565,15 @@ window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave()
 // ---------- Startup ----------
 // Nothing loads until the study password is entered; unlock() then calls start().
 async function start() {
-  if (cloud.token()) {
+  if (app.tokens.length) {
     setSaveStatus("Loading from GitHub…");
-    try { await useCloud(); return; }
-    catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; setSaveStatus(""); }
+    for (const token of app.tokens) {
+      app.token = token;
+      cloud.cache = {};
+      try { await useCloud(); return; }
+      catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; }
+    }
+    setSaveStatus("");
   } else if (FS_SUPPORTED) {
     try {
       const h = await idb.get("dir");
