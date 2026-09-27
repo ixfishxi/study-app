@@ -4,10 +4,9 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Independent exercise. Run `python -m unittest` so
-  `__pycache__` appears, create a fake `.env` containing
-  `API_KEY=not-a-real-key`, keep both out of Git, commit the ignore rules,
-  and prove both are ignored.
+- **Exact next step:** Commit only `.gitignore`, then paste
+  `git status --short` and `git log --oneline -1`. `.env` and `__pycache__`
+  are already ignored.
 
 
 ## Lesson status
