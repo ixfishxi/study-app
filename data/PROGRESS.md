@@ -4,7 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Explain what `HEAD` points to in `practice` right now.
+- **Exact next step:** Say what `HEAD` points to, including the commit that
+  is checked out.
 
 
 ## Lesson status
@@ -82,6 +83,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
