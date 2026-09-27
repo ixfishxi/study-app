@@ -4,8 +4,8 @@
 
 - **Current lesson:** L2: History, HEAD, and .gitignore
 - **Status:** In progress
-- **Exact next step:** Say what happened to `output.log` in the sandbox demo:
-  whether it is still on disk, and whether anything was committed or pushed.
+- **Exact next step:** In `sandbox`, run `git log --oneline` and say whether
+  `output.log` appears as a commit.
 
 
 ## Lesson status
