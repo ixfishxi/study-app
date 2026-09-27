@@ -375,3 +375,11 @@ It is part of the diff, not the parent commit. The two short IDs are the old
 and new versions of that one file, and `100644` is the file mode. The parent
 is the previous commit, the one directly under this one in `git log`.
 </details>
+
+**44. After a commit, where does it show up in Cursor?** `cursor`
+<details><summary>Answer</summary>
+
+The Changes list stays empty when the working tree is clean, because that list
+is only uncommitted edits. The commit remains in the Source Control graph and
+in the file's Timeline (Explorer sidebar).
+</details>
