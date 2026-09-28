@@ -4,8 +4,9 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** Restate why `## Branch check` is missing on `main`.
-  Use `commit` and the two branch labels. Leave out the word push.
+- **Exact next step:** Say what the sandbox demo did when `note.txt` had an
+  uncommitted edit and `git switch topic` ran, and what happened to the
+  untracked file `extra.txt`.
 
 
 ## Lesson status
