@@ -41,6 +41,8 @@
   .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow);
     padding: 20px; margin-bottom: 18px; }
   .panel h2 { font-size: 15px; margin: 0 0 12px; font-weight: 650; }
+  ul.headlines { margin: 8px 0 0; padding-left: 1.15em; }
+  ul.headlines li { font-size: 18px; font-weight: 650; margin: 0 0 8px; }
   .muted { color: var(--muted); }
   .small { font-size: 13px; }
   button, .btn { font: inherit; border: 1px solid var(--border); background: var(--panel); color: var(--text);
@@ -1399,9 +1401,9 @@ function viewCourse() {
 function viewSkills() {
   return `<div class="panel"><h2>Verified Skill</h2>
     <p class="small muted">What you can say you've done. A lesson is added here only when it is finished, and only if you would mention it when someone asks what you can do.</p>
-    <ul>
-      <li>I use Git locally: I create a repository, stage changes, commit them, and read the history.</li>
-      <li>I keep generated files and secrets out of that history.</li>
+    <ul class="headlines">
+      <li>Local Git history</li>
+      <li>Generated files and secrets kept out</li>
     </ul>
   </div>`;
 }
