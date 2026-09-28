@@ -34,6 +34,9 @@
   header.bar .status.err { color: var(--bad); }
   header.bar .spacer { flex: 1; }
   main { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+  main.wide { max-width: 1200px; }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover, th.sorted { color: var(--text); }
   .sim { background: var(--warn-weak); color: var(--warn); padding: 8px 20px; font-size: 13px; text-align: center; }
   .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow);
     padding: 20px; margin-bottom: 18px; }
@@ -205,6 +208,7 @@ const app = {
   progress: null, dir: null, deckDir: null, courseDir: null, savedHandle: null, source: "none",
   screen: "connect", revealed: false, cantRecall: false, typed: "",
   undo: null, browserFilter: "all", browserSearch: "", openRow: null, connectError: "",
+  certSort: { key: "overlap", dir: -1 },
 };
 
 // ---------- Small utilities ----------
@@ -953,6 +957,7 @@ function render() {
   if (PUBLISHED) sim.textContent = "Read-only copy, as of the last lesson. You can flip through cards, but nothing here is saved. Study and save in study.html on your computer.";
   else if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
   const main = $("#main");
+  main.classList.toggle("wide", app.screen === "certs");
   if (app.screen === "connect") main.innerHTML = PUBLISHED ? viewPublishedError() : viewConnect();
   else if (app.screen === "dashboard") main.innerHTML = viewDashboard();
   else if (app.screen === "study") { main.innerHTML = viewStudy(); afterStudyRender(); }
@@ -1401,20 +1406,47 @@ function viewSkills() {
   </div>`;
 }
 
+const CERT_RANK = { "S+": 7, S: 6, A: 5, B: 4, C: 3, D: 2, F: 1 };
+const CERT_ROWS = [
+  ["GitLab Certified Git Associate", 55, "Local Git, branches, merge, remotes, and a merge-request workflow. The exam’s GitLab screens and product names are the gap.", "C", "A"],
+  ["GitHub Foundations (GH-900)", 45, "The largest domain is Git and GitHub basics (25–30% of that exam), plus repositories, pull requests, and issues. The plan barely touches GitHub Projects, org admin, or the community section.", "B", "S"],
+  ["GitLab Certified Fundamentals Associate", 30, "Merge requests, issues, and a basic pipeline. Security scanning and agile planning on that exam are outside this plan.", "C", "B"],
+  ["GitHub Copilot (GH-300)", 25, "Prompting, context, reviewing generated code, privacy, and keeping secrets out of the tool. The exam is the Copilot product, not Cursor.", "A", "B"],
+  ["GitHub Actions", 20, "You add a real CI workflow, a required check, and a linter. The exam goes much further: runners, matrices, reusable workflows, environments, and deployment.", "A", "A"],
+  ["Microsoft DevOps Engineer Expert (AZ-400)", 20, "Source control is only 10–15% of that exam, and you cover a good part of it: branching, pull requests, history, recovery. More than half of AZ-400 is Azure Pipelines, release strategy, and monitoring.", "S", "B"],
+  ["GitLab Certified CI/CD Associate", 15, "You can explain a pipeline and wire a test into one. Authoring GitLab CI, runners, and deploys is the rest of that exam.", "C", "B"],
+  ["Linux Foundation Certified GitOps Associate (CGOA)", 15, "Git as the place a change is reviewed before it lands. The exam itself is Argo CD, Flux, and Kubernetes.", "B", "C"],
+].map(([name, overlap, lines, value, knowledge]) => ({ name, overlap, lines, value, knowledge }));
+
+function certSortValue(row, key) {
+  if (key === "overlap") return row.overlap;
+  if (key === "value" || key === "knowledge") return CERT_RANK[row[key]] || 0;
+  return row[key].toLowerCase();
+}
+
+function sortedCerts() {
+  const { key, dir } = app.certSort;
+  return CERT_ROWS.slice().sort((a, b) => {
+    const av = certSortValue(a, key), bv = certSortValue(b, key);
+    if (av < bv) return -dir;
+    if (av > bv) return dir;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function certHeader(key, label) {
+  const on = app.certSort.key === key;
+  const arrow = on ? (app.certSort.dir < 0 ? " ▾" : " ▴") : "";
+  const aria = on ? (app.certSort.dir < 0 ? "descending" : "ascending") : "none";
+  return `<th class="sortable${on ? " sorted" : ""}" data-action="sortCerts" data-key="${key}" aria-sort="${aria}">${label}${arrow}</th>`;
+}
+
 function viewCertifications() {
+  const rows = sortedCerts().map((r) => `<tr><td>${r.name}</td><td>${r.overlap}%</td><td>${r.lines}</td><td>${r.value}</td><td>${r.knowledge}</td></tr>`).join("");
   return `<div class="panel"><h2>Certification list</h2>
     <table>
-      <thead><tr><th>Certification</th><th>Overlap</th><th>What lines up</th><th>Value</th><th>Developer knowledge</th></tr></thead>
-      <tbody>
-        <tr><td>GitLab Certified Git Associate</td><td>about 55%</td><td>Local Git, branches, merge, remotes, and a merge-request workflow. The exam’s GitLab screens and product names are the gap.</td><td>C</td><td>A</td></tr>
-        <tr><td>GitHub Foundations (GH-900)</td><td>about 45%</td><td>The largest domain is Git and GitHub basics (25–30% of that exam), plus repositories, pull requests, and issues. The plan barely touches GitHub Projects, org admin, or the community section.</td><td>B</td><td>S</td></tr>
-        <tr><td>GitLab Certified Fundamentals Associate</td><td>about 30%</td><td>Merge requests, issues, and a basic pipeline. Security scanning and agile planning on that exam are outside this plan.</td><td>C</td><td>B</td></tr>
-        <tr><td>GitHub Copilot (GH-300)</td><td>about 25%</td><td>Prompting, context, reviewing generated code, privacy, and keeping secrets out of the tool. The exam is the Copilot product, not Cursor.</td><td>A</td><td>B</td></tr>
-        <tr><td>GitHub Actions</td><td>about 20%</td><td>You add a real CI workflow, a required check, and a linter. The exam goes much further: runners, matrices, reusable workflows, environments, and deployment.</td><td>A</td><td>A</td></tr>
-        <tr><td>Microsoft DevOps Engineer Expert (AZ-400)</td><td>about 20%</td><td>Source control is only 10–15% of that exam, and you cover a good part of it: branching, pull requests, history, recovery. More than half of AZ-400 is Azure Pipelines, release strategy, and monitoring.</td><td>S</td><td>B</td></tr>
-        <tr><td>GitLab Certified CI/CD Associate</td><td>about 15%</td><td>You can explain a pipeline and wire a test into one. Authoring GitLab CI, runners, and deploys is the rest of that exam.</td><td>C</td><td>B</td></tr>
-        <tr><td>Linux Foundation Certified GitOps Associate (CGOA)</td><td>about 15%</td><td>Git as the place a change is reviewed before it lands. The exam itself is Argo CD, Flux, and Kubernetes.</td><td>B</td><td>C</td></tr>
-      </tbody>
+      <thead><tr>${certHeader("name", "Certification")}${certHeader("overlap", "Overlap")}${certHeader("lines", "What lines up")}${certHeader("value", "Value")}${certHeader("knowledge", "Developer knowledge")}</tr></thead>
+      <tbody>${rows}</tbody>
     </table>
   </div>`;
 }
@@ -1426,6 +1458,12 @@ const actions = {
   browser() { showScreen("browser"); },
   course() { showScreen("course"); },
   certs() { showScreen("certs"); },
+  sortCerts(el) {
+    const key = el.dataset.key;
+    if (app.certSort.key === key) app.certSort.dir *= -1;
+    else app.certSort = { key, dir: key === "name" || key === "lines" ? 1 : -1 };
+    render();
+  },
   skills() { showScreen("skills"); },
   toggleLesson(el) { app.openLesson = app.openLesson === el.dataset.key ? null : el.dataset.key; render(); },
   reload() {
