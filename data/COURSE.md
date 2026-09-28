@@ -278,6 +278,8 @@ in the status bar.
 
 **Hands-on (setup for real pull requests)**
 - Create a public GitHub repo yourself (web UI, then see the `gh` equivalent).
+  Choose the MIT license on that screen. A public repo with no license is all
+  rights reserved.
 - Connect it as `origin` and push `main`.
 
 **Independent exercise**
@@ -298,6 +300,10 @@ in the status bar.
 **Objectives**
 - A GitHub Actions workflow is a file in the repo that tells GitHub to run
   commands, such as the tests, on every pull request.
+- In that file, an event starts a job. The job's steps run on a runner. The
+  event is `pull_request`, so the test check exists before merge. Pin each
+  `uses:` action to a version. Set `permissions` so the workflow token can only
+  read the repo.
 - A ruleset on `main` makes the process binding: changes come in through a pull
   request, the test check must pass, and force pushes are blocked.
 - The workflow is a committed file. The ruleset is a GitHub setting, not a file.
@@ -309,8 +315,9 @@ in the status bar.
 the ruleset settings on GitHub.
 
 **Hands-on**
-- Add a GitHub Actions workflow that runs the tests, commit it, push it, and
-  watch its first run.
+- Add a GitHub Actions workflow that runs the tests on `pull_request`. Pin each
+  `uses:` action to a version, and set `permissions` so the token can only read
+  the repo. Commit it, push it, and watch its first run.
 - Add a ruleset on `main`: require a pull request, require the test check, and
   block force pushes.
 
@@ -322,6 +329,8 @@ the ruleset settings on GitHub.
 **Mastery check**
 - Explain why the ruleset, not the workflow file, is what protects `main`.
 - Explain what "require the test check" adds to "require a pull request."
+- Explain why each `uses:` line names a version, and why the workflow token is
+  read-only.
 
 ---
 
