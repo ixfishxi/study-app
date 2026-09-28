@@ -73,7 +73,7 @@ Git Workflow Lab\          course home (NOT a git repo)
   resources\               reference material (e.g. Git_Development_Workflow.pdf)
   study\                   flash cards and study material
     FLASHCARDS.md            cards added as you learn; say "quiz me" to review
-    study.html               your spaced-repetition app; study and save here (read-only copy at https://ixfishxi.github.io/study-app/)
+    study.html               your spaced-repetition app; a finished session is saved here and on the website
     flashcards-progress.json a backup of your review history (the app saves to the cloud copy)
     sync-cloud.ps1           updates the app's cloud copy (private GitHub repo) after each lesson
   .cursor/rules/           tells the AI how to teach this course
