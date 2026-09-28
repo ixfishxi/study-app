@@ -72,12 +72,12 @@
   .badge.trouble { color: var(--bad); border-color: var(--bad); }
   .badge.edited { color: var(--warn); border-color: var(--warn); }
   .badge.tag { background: var(--code); border-color: transparent; }
-  .forecast { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding-top: 10px; }
+  .forecast { display: flex; align-items: flex-end; gap: 6px; height: 132px; padding-top: 10px; }
   .forecast .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
   .forecast .barv { width: 100%; max-width: 34px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; opacity: .85; }
   .forecast .barv.zero { background: var(--border); }
   .forecast .cnt { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
-  .forecast .d { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .forecast .d { font-size: 11px; color: var(--muted); margin-top: 4px; text-align: center; line-height: 1.2; }
   .cal { display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; grid-auto-columns: 13px; gap: 3px; }
   .cal .c { width: 13px; height: 13px; border-radius: 3px; background: var(--border); }
   .cal .c.on { background: var(--good); }
@@ -242,6 +242,8 @@ function today() {
 function keyToUTC(k) { const [y, m, d] = k.split("-").map(Number); return Date.UTC(y, m - 1, d); }
 function addDays(k, n) { return new Date(keyToUTC(k) + n * 864e5).toISOString().slice(0, 10); }
 function diffDays(a, b) { return Math.round((keyToUTC(b) - keyToUTC(a)) / 864e5); }
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function weekdayShort(k) { return WEEKDAYS[new Date(keyToUTC(k)).getUTCDay()]; }
 function prettyDay(k) {
   const d = diffDays(today(), k);
   if (d === 0) return "today";
@@ -1115,7 +1117,7 @@ function viewDashboard() {
     <div class="col" title="${x.day}: ${x.n} card${x.n === 1 ? "" : "s"}">
       <div class="cnt">${x.n || ""}</div>
       <div class="barv ${x.n ? "" : "zero"}" style="height:${Math.max(2, (x.n / max) * 80)}px"></div>
-      <div class="d">${i === 0 ? "Today" : new Date(keyToUTC(x.day)).toLocaleDateString(undefined, { weekday: "narrow", timeZone: "UTC" })}</div>
+      <div class="d">${weekdayShort(x.day)} ${Number(x.day.slice(8))}${i === 0 ? "<br>Today" : ""}</div>
     </div>`).join("");
 
   const lessonRows = app.lessons.map((l) => {
