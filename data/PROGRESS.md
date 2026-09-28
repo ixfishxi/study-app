@@ -4,10 +4,8 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** Predict, before editing: after you add the line
-  `Branch check.` to the end of `README.md`, commit it on `topic`, and run
-  `git switch main`, what is the last line of `README.md`, and what does
-  `git log --oneline --decorate -1` print?
+- **Exact next step:** On `main`, say the last heading in `README.md`, and
+  say which branch still has the `## Branch check` line.
 
 
 ## Lesson status
