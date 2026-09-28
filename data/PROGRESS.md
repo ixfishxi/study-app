@@ -4,8 +4,8 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** On `main`, run `Get-Content README.md -Tail 5` in
-  `practice` and say whether `## Branch check` is still in the file.
+- **Exact next step:** Say why `## Branch check` is missing from
+  `README.md` on `main` even though that line was committed.
 
 
 ## Lesson status
