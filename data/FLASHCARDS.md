@@ -437,3 +437,9 @@ Only the branch you have checked out. Other branch labels stay where they are.
 `git switch` then fills the folder with the snapshot that the checked-out
 branch points at.
 </details>
+
+**52. What does Git do when `git switch` would overwrite an uncommitted change?** `command`
+<details><summary>Answer</summary>
+
+It prints `error: Your local changes to the following files would be overwritten by checkout:` and `Aborting`. You stay on the current branch, and the uncommitted line stays in the file.
+</details>
