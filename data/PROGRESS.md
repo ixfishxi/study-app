@@ -4,9 +4,9 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** Start a new chat and type `/learn`. You are on `main`.
-  Next idea: an edit you have not committed yet. Predict what `git switch`
-  will do with that edit before you run it.
+- **Exact next step:** Start a new chat and type `/learn`. You are on `topic`.
+  `converter.py` has an uncommitted `# wip` line. First action: open that file
+  and say whether `# wip` is a commit.
 
 
 ## Lesson status
