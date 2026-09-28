@@ -427,3 +427,13 @@ It takes the file out of the next commit and leaves it on disk. Older commits
 still contain it. Status shows a staged removal, such as `D  note.txt`. After
 that, a matching ignore rule can keep the file out of later commits.
 </details>
+
+## L3: Defining the request, and branches as pointers
+
+**51. When you commit, which branch label moves?** `concept`
+<details><summary>Answer</summary>
+
+Only the branch you have checked out. Other branch labels stay where they are.
+`git switch` then fills the folder with the snapshot that the checked-out
+branch points at.
+</details>
