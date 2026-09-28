@@ -4,8 +4,8 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** Say why `## Branch check` is missing from
-  `README.md` on `main` even though that line was committed.
+- **Exact next step:** Restate why `## Branch check` is missing on `main`.
+  Use `commit` and the two branch labels. Leave out the word push.
 
 
 ## Lesson status
