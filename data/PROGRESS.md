@@ -4,9 +4,9 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** Say what the sandbox demo did when `note.txt` had an
-  uncommitted edit and `git switch topic` ran, and what happened to the
-  untracked file `extra.txt`.
+- **Exact next step:** Start a new chat and type `/learn`. You are on `main`.
+  Next idea: an edit you have not committed yet. Predict what `git switch`
+  will do with that edit before you run it.
 
 
 ## Lesson status
