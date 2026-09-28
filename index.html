@@ -197,8 +197,8 @@ const LS_TOKEN = "gitcards.githubToken";
 const LS_TOKEN_SEALED = "gitcards.githubToken.sealed";
 const FS_SUPPORTED = "showDirectoryPicker" in window;
 // sync-cloud.ps1 flips this to true in the copy it publishes to GitHub Pages. That copy
-// reads a snapshot from data/ next to it. Grades are saved in this browser. With the
-// GitHub token, the same copy saves to the private course repo, like study.html here.
+// reads a snapshot from data/ next to it. A session starts only after the GitHub token
+// is connected, and every grade is saved to the private course repo.
 const PUBLISHED = true;
 const PUBLISHED_DATA = {
   [DECK_FILE]: `data/${DECK_FILE}`, [PROGRESS_FILE]: `data/${PROGRESS_FILE}`,
@@ -499,7 +499,7 @@ function save(opts) {
   if (app.source === "cloud") {
     if (immediate) flushCloudSave();
     else scheduleCloudSave();
-    setSaveStatus("Saving to GitHub…");
+    setSaveStatus("Saving to your course…");
     return saveChain;
   }
   if (!app.dir) { setSaveStatus("Saved in browser storage"); return saveChain; }
@@ -624,7 +624,7 @@ function flushCloudSave(opts) {
   saveChain = saveChain.then(async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
       if (await cloud.write(PROGRESS_FILE, json)) {
-        setSaveStatus(`Saved to GitHub at ${clockTime()}`);
+        setSaveStatus(`Saved to your course at ${clockTime()}`);
         return;
       }
       // Another browser saved in between. The newer copy wins, the same rule used for browser storage.
@@ -937,7 +937,7 @@ function grade(correct) {
   if (correct) s.done.push(id);
   else s.queue.push(id);
   if (!app.progress.daysStudied.includes(t)) app.progress.daysStudied.push(t);
-  save({ immediate: s.queue.length === 0 });
+  save({ immediate: true });
   app.revealed = false; app.cantRecall = false; app.typed = "";
   showScreen(s.queue.length ? "study" : "summary");
 }
@@ -994,14 +994,14 @@ function render() {
   $("#courseTab").textContent = cs ? `Course ${cs.pct}%` : "Course";
   $("#source").textContent = {
     cloud: `Cloud: ${CLOUD_REPO}`,
-    published: "Saved in this browser",
+    published: "Not saved to your course yet",
     folder: `Folder: ${app.dir?.name || ""}`, server: "Served over HTTP (saved in this browser)",
     file: "Browser storage only", cache: "Cached cards (browser storage only)", none: "",
   }[app.source];
   const sim = $("#simBanner");
   const publishedOnly = app.source === "published";
   sim.classList.toggle("hidden", !SIM_DAY && !publishedOnly);
-  if (publishedOnly) sim.textContent = "Each grade is saved in this browser, so a refresh keeps today's session. Connect your GitHub token below to save it to your course as well.";
+  if (publishedOnly) sim.textContent = "Connect once below. After that, every card saves to your course.";
   else if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
   const main = $("#main");
   main.classList.toggle("wide", app.screen === "certs");
@@ -1028,14 +1028,13 @@ function viewPublishedSave() {
   if (app.source !== "published") return "";
   return `
   <div class="panel">
-    <h2>Saving this session</h2>
-    <p class="small">Each grade is saved in this browser. Leave and come back, or refresh, and today's session is still here.</p>
-    <p class="small">Paste the GitHub token from <code>study.html</code> on your computer to also save the session into your course.</p>
+    <h2>Save each card to your course</h2>
+    <p class="small">Paste your GitHub token once. After that, every grade is written to your course, and the same history shows up in any browser where you connect.</p>
     ${app.connectError ? `<div class="error">${esc(app.connectError)}</div>` : ""}
     <div class="row" style="margin-top:10px">
       <label style="flex:1;min-width:220px">GitHub token
         <input type="password" id="tokenInput" autocomplete="off" spellcheck="false" style="width:100%" placeholder="github_pat_…"></label>
-      <button class="primary" data-action="connectCloud">Save to my course</button>
+      <button class="primary" data-action="connectCloud">Connect</button>
     </div>
   </div>`;
 }
@@ -1128,6 +1127,7 @@ function viewDashboard() {
   }).join("");
 
   return `
+  ${viewPublishedSave()}
   ${app.warnings.map((w) => `<div class="notice">${esc(w)}</div>`).join("")}
   ${orphans.length ? `<div class="notice">${orphans.length} card${orphans.length === 1 ? " is" : "s are"} in your progress file but no longer in ${DECK_FILE} (#${orphans.join(", #")}). Their history is kept but they're hidden.</div>` : ""}
   <div class="panel">
@@ -1137,7 +1137,10 @@ function viewDashboard() {
       <div class="stat"><div class="n">${s.done.length}</div><div class="l">Cleared today</div></div>
       <div class="stat"><div class="n">${counts.verified + counts.maintenance}<span class="muted" style="font-size:15px"> / ${app.deck.length}</span></div><div class="l">Verified or maintained</div></div>
     </div>
-    ${s.queue.length
+    ${app.source === "published"
+      ? `<div class="row"><button class="primary big" disabled>Start today's session</button>
+         <span class="muted small">Connect above. Each card then saves to your course.</span></div>`
+      : s.queue.length
       ? `<div class="row"><button class="primary big" data-action="study">${started ? "Continue today's session" : "Start today's session"}</button>
          <span class="muted small">${s.queue.length} card${s.queue.length === 1 ? "" : "s"} to recall correctly once each.</span></div>`
       : `<div class="row"><strong>${s.done.length ? "Today's session is complete." : "Nothing is due today."}</strong><span class="muted">${next}</span></div>`}
@@ -1174,7 +1177,6 @@ function viewDashboard() {
 
   ${edited.length ? `<div class="notice">Edited since last review: ${edited.map((c) => `#${c.num}`).join(", ")}. Schedules were kept; read the new answer carefully next time.</div>` : ""}
 
-  ${viewPublishedSave()}
   <div class="${app.source === "published" ? "" : "grid2"}">
     ${app.source === "published" ? "" : `<div class="panel">
       <h2>Settings</h2>
@@ -1511,7 +1513,10 @@ function viewCertifications() {
 // ---------- Actions ----------
 const actions = {
   home() { if (app.source !== "none") { ensureSession(); showScreen("dashboard"); } },
-  study() { ensureSession(); app.typed = ""; showScreen(app.progress.session.queue.length ? "study" : "summary"); },
+  study() {
+    if (app.source === "published") return;
+    ensureSession(); app.typed = ""; showScreen(app.progress.session.queue.length ? "study" : "summary");
+  },
   browser() { showScreen("browser"); },
   course() { showScreen("course"); },
   certs() { showScreen("certs"); },
