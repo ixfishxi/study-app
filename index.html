@@ -196,8 +196,9 @@ const LS_TOKEN = "gitcards.githubToken";
 // Left behind by the retired password version; removed on startup.
 const LS_TOKEN_SEALED = "gitcards.githubToken.sealed";
 const FS_SUPPORTED = "showDirectoryPicker" in window;
-// sync-cloud.ps1 flips this to true in the copy it publishes to GitHub Pages. That copy is a
-// read-only viewer: it reads a snapshot from data/ next to it and never saves anything.
+// sync-cloud.ps1 flips this to true in the copy it publishes to GitHub Pages. That copy
+// reads a snapshot from data/ next to it. Grades are saved in this browser. With the
+// GitHub token, the same copy saves to the private course repo, like study.html here.
 const PUBLISHED = true;
 const PUBLISHED_DATA = {
   [DECK_FILE]: `data/${DECK_FILE}`, [PROGRESS_FILE]: `data/${PROGRESS_FILE}`,
@@ -487,23 +488,34 @@ function setSaveStatus(text, isErr) {
   const el = $("#saveStatus"); el.textContent = text; el.classList.toggle("err", !!isErr);
 }
 function clockTime() { return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
-function save() {
-  if (PUBLISHED) { setSaveStatus("Read-only copy: nothing is saved"); return saveChain; }
+function save(opts) {
+  const immediate = !!(opts && opts.immediate);
   app.progress.updatedAt = new Date().toISOString();
   const json = JSON.stringify(app.progress, null, 2);
   try { localStorage.setItem(SIM_DAY ? LS_PROGRESS_SIM : LS_PROGRESS, json); } catch {}
   if (SIM_DAY) { setSaveStatus("Simulation: saved to separate browser storage only"); return saveChain; }
-  if (app.source === "cloud") { scheduleCloudSave(); setSaveStatus("Saving to GitHub…"); return saveChain; }
+  if (app.source === "published") { setSaveStatus("Saved in this browser"); return saveChain; }
+  if (app.deckDir) queueFileWrite(json, app.source === "folder" ? () => setSaveStatus(`Saved to ${PROGRESS_FILE} at ${clockTime()}`) : null);
+  if (app.source === "cloud") {
+    if (immediate) flushCloudSave();
+    else scheduleCloudSave();
+    setSaveStatus("Saving to GitHub…");
+    return saveChain;
+  }
   if (!app.dir) { setSaveStatus("Saved in browser storage"); return saveChain; }
+  return saveChain;
+}
+
+function queueFileWrite(json, onOk) {
   const dir = app.deckDir;
+  if (!dir) return;
   saveChain = saveChain.then(async () => {
     const fh = await dir.getFileHandle(PROGRESS_FILE, { create: true });
     const w = await fh.createWritable();
     await w.write(json);
     await w.close();
-    setSaveStatus(`Saved to ${PROGRESS_FILE} at ${clockTime()}`);
-  }).catch((err) => setSaveStatus(`Could not write ${PROGRESS_FILE} (${err.message}). Progress is kept in browser storage.`, true));
-  return saveChain;
+    if (onOk) onOk();
+  }).catch((err) => setSaveStatus(`Could not write ${PROGRESS_FILE} (${err.message}). The review is still saved in this browser.`, true));
 }
 
 // ---------- Cloud (GitHub) storage ----------
@@ -576,12 +588,15 @@ const cloud = {
     return text;
   },
   // Returns false when the cloud copy changed since it was last read (409/422), so the caller can reconcile.
-  async write(name, text) {
+  async write(name, text, opts) {
     const path = CLOUD_PATHS[name];
     const body = { message: `Update ${path} from study.html`, content: encodeUtf8Base64(text) };
     const sha = this.cache[path]?.sha;
     if (sha) body.sha = sha;
-    const r = await githubFetch(CLOUD_API + path, { method: "PUT", headers: this.headers({ "Content-Type": "application/json" }), body: JSON.stringify(body) });
+    const r = await githubFetch(CLOUD_API + path, {
+      method: "PUT", keepalive: !!(opts && opts.keepalive),
+      headers: this.headers({ "Content-Type": "application/json" }), body: JSON.stringify(body),
+    });
     if (r.status === 409 || r.status === 422) return false;
     if (!r.ok) throw new Error(await cloudError(r));
     const j = await r.json();
@@ -595,12 +610,20 @@ function scheduleCloudSave() {
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer = setTimeout(flushCloudSave, CLOUD_SAVE_DELAY_MS);
 }
-function flushCloudSave() {
+function flushCloudSave(opts) {
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer = null;
+  if (app.source !== "cloud") return saveChain;
+  const keepalive = !!(opts && opts.keepalive);
+  const json = JSON.stringify(app.progress, null, 2);
+  // A tab close cancels a normal request. keepalive lets this one finish after the page is gone.
+  if (keepalive) {
+    cloud.write(PROGRESS_FILE, json, { keepalive: true }).catch(() => {});
+    return saveChain;
+  }
   saveChain = saveChain.then(async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (await cloud.write(PROGRESS_FILE, JSON.stringify(app.progress, null, 2))) {
+      if (await cloud.write(PROGRESS_FILE, json)) {
         setSaveStatus(`Saved to GitHub at ${clockTime()}`);
         return;
       }
@@ -620,7 +643,7 @@ function flushCloudSave() {
 
 function adoptProgress(p) {
   app.progress = normalize(p);
-  if (!PUBLISHED) { try { localStorage.setItem(LS_PROGRESS, JSON.stringify(app.progress, null, 2)); } catch {} }
+  if (!SIM_DAY) { try { localStorage.setItem(LS_PROGRESS, JSON.stringify(app.progress, null, 2)); } catch {} }
   reconcileDeck();
   ensureSession();
   if (app.screen !== "study") render();
@@ -633,7 +656,7 @@ async function fetchPublished(name) {
   return r.ok ? r.text() : null;
 }
 
-// The published copy starts from the snapshot every time, so a visit never keeps changes around.
+// Starts from the published snapshot, then keeps a newer session saved in this browser.
 async function usePublished() {
   const [md, progressText, courseProgress, course] =
     await Promise.all([DECK_FILE, PROGRESS_FILE, COURSE_PROGRESS_FILE, COURSE_FILE].map(fetchPublished));
@@ -644,7 +667,7 @@ async function usePublished() {
   loadCourse(courseProgress, course);
   let snapshot = null;
   try { snapshot = progressText ? JSON.parse(progressText) : null; } catch {}
-  app.progress = normalize(snapshot);
+  app.progress = chooseProgress(snapshot);
   finishLoad();
 }
 
@@ -661,6 +684,7 @@ async function useCloud() {
   loadDeck(md);
   loadCourse(courseProgress, course);
   app.progress = chooseProgress(cloudP);
+  await attachLocalMirror();
   finishLoad();
 }
 
@@ -718,6 +742,20 @@ async function useFolder(dir) {
   finishLoad();
 }
 
+// When the course folder was already allowed, a GitHub save also updates the file on disk.
+async function attachLocalMirror() {
+  if (!FS_SUPPORTED || app.deckDir) return;
+  let h = app.savedHandle;
+  try { if (!h) h = await idb.get("dir"); } catch { return; }
+  if (!h) return;
+  try { if ((await h.queryPermission({ mode: "readwrite" })) !== "granted") return; } catch { return; }
+  const study = await subdir(h, STUDY_DIR);
+  const deckDir = study && (await readText(study, DECK_FILE)) != null ? study : h;
+  if ((await readText(deckDir, DECK_FILE)) == null) return;
+  app.deckDir = deckDir;
+  app.savedHandle = h;
+}
+
 function loadDeck(md) {
   app.texts.deck = md;
   const parsed = parseDeck(md);
@@ -739,7 +777,8 @@ function reconcileDeck() {
 function finishLoad() {
   reconcileDeck();
   ensureSession();
-  save();
+  // Opening the public site must not stamp a new time onto the snapshot. A grade saves.
+  if (app.source !== "published") save();
   showScreen("dashboard");
 }
 
@@ -775,7 +814,12 @@ async function refreshSources(force = false) {
       const text = await fetchPublished(PROGRESS_FILE);
       if (text != null && text !== app.texts.progressSnapshot) {
         app.texts.progressSnapshot = text;
-        try { adoptProgress(JSON.parse(text)); changed = true; } catch {}
+        try {
+          const remote = JSON.parse(text);
+          if (newer(remote, app.progress) === remote && remote.updatedAt !== app.progress.updatedAt) {
+            adoptProgress(remote); changed = true;
+          }
+        } catch {}
       }
     }
     // Pick up reviews saved from another browser, but never mid-card or over an unsaved change.
@@ -893,7 +937,7 @@ function grade(correct) {
   if (correct) s.done.push(id);
   else s.queue.push(id);
   if (!app.progress.daysStudied.includes(t)) app.progress.daysStudied.push(t);
-  save();
+  save({ immediate: s.queue.length === 0 });
   app.revealed = false; app.cantRecall = false; app.typed = "";
   showScreen(s.queue.length ? "study" : "summary");
 }
@@ -950,13 +994,14 @@ function render() {
   $("#courseTab").textContent = cs ? `Course ${cs.pct}%` : "Course";
   $("#source").textContent = {
     cloud: `Cloud: ${CLOUD_REPO}`,
-    published: "Read-only copy (as of the last lesson)",
-    folder: `Folder: ${app.dir?.name || ""}`, server: "Served over HTTP (read-only cards)",
+    published: "Saved in this browser",
+    folder: `Folder: ${app.dir?.name || ""}`, server: "Served over HTTP (saved in this browser)",
     file: "Browser storage only", cache: "Cached cards (browser storage only)", none: "",
   }[app.source];
   const sim = $("#simBanner");
-  sim.classList.toggle("hidden", !SIM_DAY && !PUBLISHED);
-  if (PUBLISHED) sim.textContent = "Read-only copy, as of the last lesson. You can flip through cards, but nothing here is saved. Study and save in study.html on your computer.";
+  const publishedOnly = app.source === "published";
+  sim.classList.toggle("hidden", !SIM_DAY && !publishedOnly);
+  if (publishedOnly) sim.textContent = "Each grade is saved in this browser, so a refresh keeps today's session. Connect your GitHub token below to save it to your course as well.";
   else if (SIM_DAY) sim.textContent = `Simulating ${SIM_DAY}. Progress in this mode is kept separately and never written to ${PROGRESS_FILE}. Remove ?today= from the URL to study for real.`;
   const main = $("#main");
   main.classList.toggle("wide", app.screen === "certs");
@@ -973,10 +1018,25 @@ function render() {
 function viewPublishedError() {
   return `
   <div class="panel" style="max-width:520px;margin:40px auto">
-    <h2>This read-only copy couldn't load</h2>
+    <h2>This copy couldn't load</h2>
     ${app.connectError ? `<div class="error">${esc(app.connectError)}</div>` : ""}
-    <p class="small">Study and save progress in <code>study.html</code> on your computer. This online copy only shows the cards
-      and progress as of the last lesson.</p>
+    <p class="small">Open <code>study.html</code> on your computer, or reload this page. A session you already finished in this browser is kept.</p>
+  </div>`;
+}
+
+function viewPublishedSave() {
+  if (app.source !== "published") return "";
+  return `
+  <div class="panel">
+    <h2>Saving this session</h2>
+    <p class="small">Each grade is saved in this browser. Leave and come back, or refresh, and today's session is still here.</p>
+    <p class="small">Paste the GitHub token from <code>study.html</code> on your computer to also save the session into your course.</p>
+    ${app.connectError ? `<div class="error">${esc(app.connectError)}</div>` : ""}
+    <div class="row" style="margin-top:10px">
+      <label style="flex:1;min-width:220px">GitHub token
+        <input type="password" id="tokenInput" autocomplete="off" spellcheck="false" style="width:100%" placeholder="github_pat_…"></label>
+      <button class="primary" data-action="connectCloud">Save to my course</button>
+    </div>
   </div>`;
 }
 
@@ -1081,7 +1141,7 @@ function viewDashboard() {
       ? `<div class="row"><button class="primary big" data-action="study">${started ? "Continue today's session" : "Start today's session"}</button>
          <span class="muted small">${s.queue.length} card${s.queue.length === 1 ? "" : "s"} to recall correctly once each.</span></div>`
       : `<div class="row"><strong>${s.done.length ? "Today's session is complete." : "Nothing is due today."}</strong><span class="muted">${next}</span></div>`}
-    ${!PUBLISHED && !s.queue.length && newRemaining ? `<div class="row" style="margin-top:12px">
+    ${app.source !== "published" && !s.queue.length && newRemaining ? `<div class="row" style="margin-top:12px">
         <button data-action="moreNew">Add up to ${app.progress.settings.newPerDay} more new cards today</button>
         <span class="muted small">${newRemaining} new card${newRemaining === 1 ? "" : "s"} waiting. Optional; spacing matters more than volume.</span></div>` : ""}
   </div>
@@ -1114,8 +1174,9 @@ function viewDashboard() {
 
   ${edited.length ? `<div class="notice">Edited since last review: ${edited.map((c) => `#${c.num}`).join(", ")}. Schedules were kept; read the new answer carefully next time.</div>` : ""}
 
-  <div class="${PUBLISHED ? "" : "grid2"}">
-    ${PUBLISHED ? "" : `<div class="panel">
+  ${viewPublishedSave()}
+  <div class="${app.source === "published" ? "" : "grid2"}">
+    ${app.source === "published" ? "" : `<div class="panel">
       <h2>Settings</h2>
       <div class="row" style="margin-bottom:10px"><label>New cards per day <input type="number" min="0" max="100" id="setNew" value="${app.progress.settings.newPerDay}"></label></div>
       <div class="row" style="margin-bottom:14px"><label>New day starts at
@@ -1281,7 +1342,7 @@ function viewBrowser() {
       <div class="small muted" style="margin-bottom:6px">${inline(c.lesson)} &middot; ${c.tags.map(esc).join(", ")}${st ? ` &middot; every ${st.intervalDays} day${st.intervalDays === 1 ? "" : "s"}` : ""}</div>
       <details><summary class="small">Show answer</summary><div class="answer" style="margin:8px 0">${renderMd(c.answer)}</div></details>
       <div class="hist" style="margin:8px 0">${hist}</div>
-      ${st && !PUBLISHED ? `<button data-action="resetCard" data-id="${c.id}">Reset this card to New</button>` : ""}
+      ${st && app.source !== "published" ? `<button data-action="resetCard" data-id="${c.id}">Reset this card to New</button>` : ""}
     </td></tr>` : ""}`;
   }).join("");
 
@@ -1541,13 +1602,13 @@ const actions = {
   },
 };
 
-// The published read-only copy never runs these, even if a button is reached some other way.
-const EDIT_ACTIONS = new Set(["moreNew", "resetCard", "export", "import", "forgetToken", "connectCloud", "connect", "reconnect", "pickDeck"]);
+// On the public site, before a GitHub token is connected, these stay off. Grading still saves.
+const EDIT_ACTIONS = new Set(["moreNew", "resetCard", "export", "import", "connect", "reconnect", "pickDeck"]);
 
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-action]");
   if (!el || !actions[el.dataset.action]) return;
-  if (PUBLISHED && EDIT_ACTIONS.has(el.dataset.action)) return;
+  if (app.source === "published" && EDIT_ACTIONS.has(el.dataset.action)) return;
   actions[el.dataset.action](el, e);
 });
 
@@ -1562,7 +1623,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("change", (e) => {
-  if (PUBLISHED && (e.target.id === "setNew" || e.target.id === "setHour")) return;
+  if (app.source === "published" && (e.target.id === "setNew" || e.target.id === "setHour")) return;
   if (e.target.id === "setNew") {
     const v = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0));
     app.progress.settings.newPerDay = v; ensureSession(); save(); render();
@@ -1608,12 +1669,17 @@ document.addEventListener("visibilitychange", backgroundRefresh);
 setInterval(backgroundRefresh, REFRESH_MS);
 // Save right away when the tab is hidden or closed, instead of waiting out the batching delay.
 document.addEventListener("visibilitychange", () => { if (document.hidden && cloudSaveTimer) flushCloudSave(); });
-window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave(); });
+window.addEventListener("pagehide", () => { if (cloudSaveTimer) flushCloudSave({ keepalive: true }); });
 
 // ---------- Startup ----------
 async function start() {
   localStorage.removeItem(LS_TOKEN_SEALED);
   if (PUBLISHED) {
+    if (cloud.token()) {
+      setSaveStatus("Loading from GitHub…");
+      try { await useCloud(); return; }
+      catch (e) { app.connectError = `Couldn't load from GitHub: ${e.message}`; setSaveStatus(""); }
+    }
     try { await usePublished(); }
     catch (e) { app.connectError = e.message; showScreen("connect"); }
     return;
