@@ -1410,14 +1410,8 @@ function viewSkills() {
 
 const CERT_RANK = { "S+": 7, S: 6, A: 5, B: 4, C: 3, D: 2, F: 1 };
 const CERT_ROWS = [
-  ["GitLab Certified Git Associate", 55, "Local Git, branches, merge, remotes, and a merge-request workflow. The exam’s GitLab screens and product names are the gap.", "C", "A"],
   ["GitHub Foundations (GH-900)", 45, "The largest domain is Git and GitHub basics (25–30% of that exam), plus repositories, pull requests, and issues. The plan barely touches GitHub Projects, org admin, or the community section.", "B", "S"],
-  ["GitLab Certified Fundamentals Associate", 30, "Merge requests, issues, and a basic pipeline. Security scanning and agile planning on that exam are outside this plan.", "C", "B"],
-  ["GitHub Copilot (GH-300)", 25, "Prompting, context, reviewing generated code, privacy, and keeping secrets out of the tool. The exam is the Copilot product, not Cursor.", "A", "B"],
   ["GitHub Actions", 20, "You add a real CI workflow, a required check, and a linter. The exam goes much further: runners, matrices, reusable workflows, environments, and deployment.", "A", "A"],
-  ["Microsoft DevOps Engineer Expert (AZ-400)", 20, "Source control is only 10–15% of that exam, and you cover a good part of it: branching, pull requests, history, recovery. More than half of AZ-400 is Azure Pipelines, release strategy, and monitoring.", "S", "B"],
-  ["GitLab Certified CI/CD Associate", 15, "You can explain a pipeline and wire a test into one. Authoring GitLab CI, runners, and deploys is the rest of that exam.", "C", "B"],
-  ["Linux Foundation Certified GitOps Associate (CGOA)", 15, "Git as the place a change is reviewed before it lands. The exam itself is Argo CD, Flux, and Kubernetes.", "B", "C"],
 ].map(([name, overlap, lines, value, knowledge]) => ({ name, overlap, lines, value, knowledge }));
 
 function certSortValue(row, key) {
