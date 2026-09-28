@@ -4,8 +4,8 @@
 
 - **Current lesson:** L3: Defining the request, and branches as pointers
 - **Status:** In progress
-- **Exact next step:** On `main`, say the last heading in `README.md`, and
-  say which branch still has the `## Branch check` line.
+- **Exact next step:** On `main`, run `Get-Content README.md -Tail 5` in
+  `practice` and say whether `## Branch check` is still in the file.
 
 
 ## Lesson status
