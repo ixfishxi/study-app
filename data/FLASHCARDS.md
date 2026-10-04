@@ -443,3 +443,39 @@ branch points at.
 
 It prints `error: Your local changes to the following files would be overwritten by checkout:` and `Aborting`. You stay on the current branch, and the uncommitted line stays in the file.
 </details>
+
+**53. Before you edit code for a request, what three things do you write down?** `concept`
+<details><summary>Answer</summary>
+
+Outcome (what should be true when you're done), scope (what you will and won't change), and one or two done-when checks (how you'll prove it worked).
+</details>
+
+**54. What is a Git branch?** `concept`
+<details><summary>Answer</summary>
+
+A movable pointer (a short name) that points at a commit. Creating a branch does not copy the whole project.
+</details>
+
+**55. What does `git switch -c <name>` do?** `command`
+<details><summary>Answer</summary>
+
+Creates a new branch named `<name>` and switches to it. The new branch starts at the commit you were already on.
+</details>
+
+**56. Does `git switch -c <name>` create a new commit?** `concept`
+<details><summary>Answer</summary>
+
+No. It only creates a new branch pointer. A new commit hash appears only when you run `git commit`.
+</details>
+
+**57. Where does Git store branch pointers inside `.git`?** `concept`
+<details><summary>Answer</summary>
+
+Under `.git/refs/heads/`. Each file is a branch name whose contents are a commit hash. `HEAD` names which branch is checked out.
+</details>
+
+**58. What does `M converter.py` mean during `git switch`?** `message`
+<details><summary>Answer</summary>
+
+The file is modified: it still has uncommitted changes, and those changes came with you to the branch you switched to. The switch did not commit them.
+</details>
