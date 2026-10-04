@@ -2,12 +2,11 @@
 
 ## Where you are
 
-- **Current lesson:** L3: Defining the request, and branches as pointers
-- **Status:** In progress
-- **Exact next step:** You are on `topic`. Run `git switch main`. Then, for
-  the request "Add a pounds-to-kilograms conversion (`lb-to-kg`)," write the
-  outcome, the scope, and one or two done-when checks. Do not edit code and
-  do not create a branch until those are written.
+- **Current lesson:** L4: Local merge and your first conflict
+- **Status:** Not started
+- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 4.
+  In `practice` you are on `lb-to-kg` at `92dfe23`; `main` is still at
+  `1ade19b`. After the warm-up, switch to `main` and merge `lb-to-kg`.
 
 
 ## Lesson status
@@ -21,7 +20,7 @@ only when all four have dates.
 | L0 Git vs GitHub vs Cursor, first repo | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L1 Working tree, staging, commits | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L2 History, HEAD, .gitignore | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
-| L3 Requests and branches | In progress | | 2026-09-28 | | |
+| L3 Requests and branches | **Mastered** | 2026-10-04 | 2026-09-28 | 2026-10-04 | 2026-10-04 |
 | L4 Local merge and first conflict | Not started | | | | |
 | L5 Remotes, fetch vs pull | Not started | | | | |
 | L6 Protecting main: CI and a ruleset | Not started | | | | |
@@ -85,7 +84,6 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
-- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
