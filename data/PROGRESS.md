@@ -2,11 +2,11 @@
 
 ## Where you are
 
-- **Current lesson:** L4: Local merge and your first conflict
+- **Current lesson:** L5: Remotes, origin, and fetch vs. pull
 - **Status:** Not started
-- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 4.
-  In `practice` you are on `lb-to-kg` at `92dfe23`; `main` is still at
-  `1ade19b`. After the warm-up, switch to `main` and merge `lb-to-kg`.
+- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 5.
+  In `practice` you are on `main` at `0c08b18` (clean). Branch `topic`
+  remains at `df98146`.
 
 
 ## Lesson status
@@ -21,7 +21,7 @@ only when all four have dates.
 | L1 Working tree, staging, commits | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L2 History, HEAD, .gitignore | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L3 Requests and branches | **Mastered** | 2026-10-04 | 2026-09-28 | 2026-10-04 | 2026-10-04 |
-| L4 Local merge and first conflict | Not started | | | | |
+| L4 Local merge and first conflict | **Mastered** | 2026-10-04 | 2026-10-04 | 2026-10-04 | 2026-10-04 |
 | L5 Remotes, fetch vs pull | Not started | | | | |
 | L6 Protecting main: CI and a ruleset | Not started | | | | |
 | L7 First pull request | Not started | | | | |
@@ -84,6 +84,7 @@ only when all four have dates.
 
 ## Mistakes to revisit
 
+- **Kept private**
 - **Kept private**
 - **Kept private**
 - **Kept private**
