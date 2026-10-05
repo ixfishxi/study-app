@@ -479,3 +479,53 @@ Under `.git/refs/heads/`. Each file is a branch name whose contents are a commit
 
 The file is modified: it still has uncommitted changes, and those changes came with you to the branch you switched to. The switch did not commit them.
 </details>
+
+## L4: Local merge and your first conflict
+
+**59. What is a fast-forward merge?** `concept`
+<details><summary>Answer</summary>
+
+When the branch you're on hasn't moved since the other branch started, Git just slides your branch label forward to that commit. No new merge commit is created. The output says `Fast-forward`.
+</details>
+
+**60. What does `git merge <branch>` do?** `command`
+<details><summary>Answer</summary>
+
+It brings that branch's commits into the branch you are currently on. You must be on the receiving branch first (for example, `git switch main` then `git merge feature`).
+</details>
+
+**61. When does a content merge conflict happen?** `concept`
+<details><summary>Answer</summary>
+
+When two branches changed the same line in different ways, so Git cannot safely pick one result on its own.
+</details>
+
+**62. What do the markers `<<<<<<<`, `=======`, and `>>>>>>>` mean?** `message`
+<details><summary>Answer</summary>
+
+They mark a conflicted section. Between `<<<<<<< HEAD` and `=======` is your current branch's version. Between `=======` and `>>>>>>>` is the incoming branch's version. You edit to the intended text and delete every marker line.
+</details>
+
+**63. What does `git merge --abort` do?** `command`
+<details><summary>Answer</summary>
+
+It cancels an in-progress merge and puts the branch back to how it was before you ran `git merge`.
+</details>
+
+**64. What's the difference between `git branch -d` and `git branch -D`?** `command` `safety`
+<details><summary>Answer</summary>
+
+`-d` deletes the branch only if its work is already included in your current branch (safe). `-D` force-deletes even if that work was never merged (you can lose access to those commits more easily).
+</details>
+
+**65. In Cursor's conflict UI, what do Accept Current and Accept Incoming mean?** `cursor`
+<details><summary>Answer</summary>
+
+Accept Current keeps the `HEAD` / current-branch side. Accept Incoming keeps the other branch's side. Accept Both keeps both. You still finish with `git add` and `git commit`.
+</details>
+
+**66. Is a Git branch a folder on disk?** `concept`
+<details><summary>Answer</summary>
+
+No. A branch is a sticky-note name pointing at a commit (stored under `.git/refs/heads/`). Creating a folder named `testa` does not create a branch; `git switch -c testa` does.
+</details>
