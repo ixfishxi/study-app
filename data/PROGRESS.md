@@ -3,10 +3,11 @@
 ## Where you are
 
 - **Current lesson:** L5: Remotes, origin, and fetch vs. pull
-- **Status:** Not started
-- **Exact next step:** Start a new chat and type `/learn` to begin Lesson 5.
-  In `practice` you are on `main` at `0c08b18` (clean). Branch `topic`
-  remains at `df98146`.
+- **Status:** In progress
+- **Exact next step:** Start a new chat and type `/learn`. Say in one sentence
+  what the sandbox demo showed about `origin`. The demo repo is
+  `sandbox\local`; its origin is the bare repo `sandbox\hub.git`. `practice`
+  is still on `main` at `0c08b18` (clean). Branch `topic` remains at `df98146`.
 
 
 ## Lesson status
@@ -22,7 +23,7 @@ only when all four have dates.
 | L2 History, HEAD, .gitignore | **Mastered** | 2026-09-27 | 2026-09-27 | 2026-09-27 | 2026-09-27 |
 | L3 Requests and branches | **Mastered** | 2026-10-04 | 2026-09-28 | 2026-10-04 | 2026-10-04 |
 | L4 Local merge and first conflict | **Mastered** | 2026-10-04 | 2026-10-04 | 2026-10-04 | 2026-10-04 |
-| L5 Remotes, fetch vs pull | Not started | | | | |
+| L5 Remotes, fetch vs pull | In progress | | | | |
 | L6 Protecting main: CI and a ruleset | Not started | | | | |
 | L7 First pull request | Not started | | | | |
 | L8 Review, revision, failing check | Not started | | | | |
