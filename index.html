@@ -337,7 +337,7 @@ function renderMd(md) {
 
 // ---------- Course plan (PROGRESS.md + COURSE.md) ----------
 // Lessons are matched across files by key: "L0".."L61", "Capstone", and optional "S1".."S3".
-// L0–L61 and the capstone count toward the completion percentage. S1–S3 do not.
+// L0–L61 and the capstone count toward the completion percentage. S1–S5 do not.
 function lessonKey(name) {
   const s = String(name || "").trim();
   const m = s.match(/^(L\d+)\b/i);
@@ -1454,7 +1454,7 @@ function viewCourse() {
   </div>
 
   ${sum.salesforce.length ? `<div class="panel"><h2>Salesforce bridge (optional)</h2>
-    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production. It does not gate Part 2, and it is not part of the course percentage.</p>
+    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production, plus a change-set list and a production note. It does not gate Part 2, and it is not part of the course percentage.</p>
     <p class="small" style="margin-top:0"><strong>${sum.salesforceStats.pct}%</strong> <span class="muted">&middot; ${partProgress(sum.salesforceStats)}</span></p>
     ${table(sum.salesforce)}</div>` : ""}
 
@@ -1467,7 +1467,7 @@ function viewCourse() {
     <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0 to L${sum.lastLesson} and the Git capstone)
     has four mastery gates (Explain, Predict, Perform, Verify), recorded with dates in <code>${COURSE_PROGRESS_FILE}</code>.
     Course completion is gates observed out of ${sum.gatesTotal}; a lesson is Mastered when all four are observed.
-    S1–S3 are optional and are left out of that percentage.
+    S1–S5 are optional and are left out of that percentage.
     Flash cards verified is cards with ${VERIFY_STREAK} first-try passes in a row, so it drops when new cards are added and rises as they stick.
     Both update automatically every ${REFRESH_MS / 1000} seconds and when you return to this tab.
   </p>`;
