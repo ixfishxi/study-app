@@ -20,12 +20,15 @@ progress lives in the files, not the chat.
 
 ## Course map
 
-The course has ten parts, taught in order. Each lesson starts only after the
-one before it is Mastered.
+The course has ten parts, taught in order, plus an optional Salesforce bridge
+after the capstone. Each required lesson starts only after the one before it
+is Mastered. S1–S3 start only after the capstone, in order, and only if you
+choose them. They do not gate Lesson 16.
 
 | Part | Lessons | What it teaches | Why it's a separate part |
 |------|---------|-----------------|--------------------------|
 | 1. Core Git workflow | L0–L15, Capstone | Git and GitHub by hand, from a request to a merged pull request, plus history cleanup, cherry-pick and stash, tags, and bisect | Everything later depends on it. The capstone proves the whole Git workflow before any agent work. |
+| Salesforce bridge (optional) | S1–S3, callback on L37 | A reviewed commit promoted through Salesforce orgs: your org, integration, staging, production | Orgs are deploy targets. The bridge applies Part 1 to that flow and does not gate Part 2. |
 | 2. Cursor's AI tools | L16–L21 | Editor navigation, Tab and Inline Edit, agent chat, sandbox and run modes, secrets, undoing agent work | Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request. |
 | 3. Directing an agent | L22–L25 | Writing a work request, Plan and Ask modes, chat scope, the Agents Window | A clear request, an approved plan, and one request per chat decide most of what the agent gets right. |
 | 4. Checking and correcting agent work | L26–L30 | Review and testing, weakened tests, triaging review findings, revising agent work, debugging | "Finished" from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence. |
@@ -81,6 +84,10 @@ Git Workflow Lab\          course home (NOT a git repo)
   practice\                YOUR repo: you run every command here
   sandbox\                 instructor demo area (local only, never pushed; emptied after each lesson)
 ```
+
+`sfwork\` is not in the tree yet. S2 creates it as its own repo for the
+Salesforce drills. It is not `practice\`. In those lessons, "Salesforce
+sandbox" means a Salesforce org. `sandbox\` is still the demo area.
 
 The practice project is a tiny Python unit converter:
 
@@ -636,12 +643,124 @@ prompting.
 
 Any Shaky or Missed item goes into "Mistakes to revisit" for a targeted retest.
 
+When the capstone is Mastered, the next chat chooses this bridge or Lesson 16.
+The bridge does not gate Lesson 16.
+
+---
+
+## Salesforce bridge (optional)
+
+This follows the Git capstone. Take it, or go straight to Lesson 16. Skipping
+it is a finished choice. S1–S3 use the same four gates as every other lesson.
+S2 and S3 run in `sfwork\`, not in `practice\`. No lesson in this bridge
+deploys to production.
+
+The source of truth is the Git commit. Each org has one job:
+
+- **Your org** (a scratch org, or your own Developer sandbox) builds one branch.
+- **Integration** is a shared Salesforce sandbox. It receives merged commits.
+- **Staging** is a Partial Copy or Full sandbox. It receives a release tag.
+- **Production** receives that same tag after staging has passed. You name it
+  in these lessons. You do not deploy to it.
+
+### S1: One commit, four orgs
+
+*A branch is where you build. A Salesforce org is where a commit is deployed.*
+
+**Objectives**
+- Your org is the only one that receives work from a feature branch.
+- The integration sandbox receives the merge commit, not the open branch.
+- Staging and production receive one tag of that commit, after the merge.
+- A long-lived branch per org is not this flow. The commit is what moves.
+
+**Commands:** none. You trace the commit with the Git words you already use
+(`branch`, merge commit, `tag`).
+
+**Cursor:** none.
+
+**Hands-on**
+- In the chat, the instructor walks one commit across the four orgs. You say
+  which org a feature branch may be deployed to, and which orgs wait for a
+  merge or a tag.
+
+**Independent exercise**
+- Write a trace of one change from a new branch through to production. For
+  each step, name the Git object and the org that receives it. You do not log
+  in to Salesforce.
+
+**Mastery check**
+- Explain why the integration sandbox does not take the feature branch.
+- Explain what production is supposed to receive.
+
+---
+
+### S2: Build on a branch in your own org
+
+*One change, in your org, committed on a branch.*
+
+**Objectives**
+- `sfwork\` is its own repo. `practice\` stays the Python course repo.
+- You build in a scratch org or your own Developer sandbox, on a branch.
+- The metadata you changed comes onto that branch and is committed there.
+- A pull request is how the change leaves your org. You do not deploy it to
+  the shared sandbox in this lesson.
+
+**Commands:** `sf org login web`, `sf org list`, `sf project retrieve start`,
+`sf project deploy start`, plus the Git commands from Part 1.
+
+**Cursor:** Source Control on the `sfwork\` folder.
+
+**Hands-on**
+- Predict what `git status` will show after the source for one component is
+  retrieved onto a new branch. The component is named when the lesson starts.
+  Then you run that retrieve.
+
+**Independent exercise**
+- On a second branch, bring a second component from your own org onto the
+  branch, commit it, push, and open a pull request. Show `git diff` and the
+  deploy result for your org. The component is named when the lesson starts.
+
+**Mastery check**
+- Explain why this repo, not the org, is the copy the pull request reviews.
+- Explain why this lesson stops before the shared sandbox.
+
+---
+
+### S3: Promote the same commit
+
+*Staging receives the commit you already merged, then you tag it.*
+
+**Objectives**
+- The second org is a Salesforce sandbox you are allowed to deploy to. It is
+  not production.
+- You deploy the merge commit, not a new edit made in that org.
+- The tag names that same commit. `git show` on the tag and the deploy refer
+  to one snapshot.
+- Production would receive that tag next. This lesson does not deploy there.
+
+**Commands:** `sf project deploy start`, `git tag -a`, `git show`, `git rev-parse`
+
+**Cursor:** Source Control Graph, to see the tag on the merge commit.
+
+**Hands-on**
+- Predict what the second sandbox will contain after the merged commit is
+  deployed, then deploy it.
+
+**Independent exercise**
+- Tag that commit. Show the deploy output and `git show` on the tag, and show
+  that both refer to the same commit.
+
+**Mastery check**
+- Explain why the second sandbox does not get its own branch.
+- Explain what you would hand production, and why you did not deploy it here.
+
 ---
 
 ## Part 2: Cursor's AI tools
 
-This follows the Git capstone. Parts 2 to 10 start only once you can branch,
-commit, push, and open a pull request.
+This follows the Git capstone. You may take the Salesforce bridge first. Parts
+2 to 10 start once the capstone is done, whether or not you finish S1–S3. You
+still need to be able to branch, commit, push, and open a pull request.
 
 Each lesson from here on runs like the lessons before it: a short concept, one
 demo, you predict, you perform in `practice\`, we inspect, you explain it, then
@@ -1517,6 +1636,11 @@ interpreter from the Command Palette.
 **Mastery check**
 - Explain what the command-line test catches that the unit tests do not.
 - Explain why a new check only protects `main` once it is required.
+
+**Salesforce callback.** If S3 is Mastered, you also add a workflow that deploys
+the merge commit to your integration sandbox. Production stays out of this
+lesson. A package version installed in each org is the later form of that same
+promotion. If S3 is not Mastered, this lesson stays the checks above.
 
 ---
 
