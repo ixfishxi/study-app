@@ -40,52 +40,53 @@ only when all four have dates.
 | L18 Promote the same commit | Not started | | | | |
 | L19 A change set that matches the commit | Not started | | | | |
 | L20 Production on paper | Not started | | | | |
-| L21 Editor navigation | Not started | | | | |
-| L22 Tab and Inline Edit | Not started | | | | |
-| L23 Agent chat basics | Not started | | | | |
-| L24 Sandbox and run modes | Not started | | | | |
-| L25 Secrets and .cursorignore | Not started | | | | |
-| L26 Undoing agent work | Not started | | | | |
-| L27 Writing a work request | Not started | | | | |
-| L28 Plan and Ask modes | Not started | | | | |
-| L29 Chat scope | Not started | | | | |
-| L30 The Agents Window | Not started | | | | |
-| L31 Review and testing | Not started | | | | |
-| L32 Tests that lie | Not started | | | | |
-| L33 Triage a review finding | Not started | | | | |
-| L34 Revising agent work | Not started | | | | |
-| L35 Debugging with an agent | Not started | | | | |
-| L36 The project brain | Not started | | | | |
-| L37 Scoped rules | Not started | | | | |
-| L38 Milestone 1: Solo agent sprint | Not started | | | | |
-| L39 Map an unfamiliar codebase | Not started | | | | |
-| L40 Characterize, then refactor | Not started | | | | |
-| L41 Dependencies and one setup command | Not started | | | | |
-| L42 More automatic checks | Not started | | | | |
-| L43 A fresh clone | Not started | | | | |
-| L44 Milestone 2: Take over a teammate's branch | Not started | | | | |
-| L45 Git worktrees | Not started | | | | |
-| L46 Cursor /worktree | Not started | | | | |
-| L47 Worktree setup | Not started | | | | |
-| L48 Cloud agents | Not started | | | | |
-| L49 Cloud environment setup | Not started | | | | |
-| L50 Moving work between local and cloud | Not started | | | | |
-| L51 Break a big request into tasks | Not started | | | | |
-| L52 GitHub Issues as the request queue | Not started | | | | |
-| L53 Two requests at once | Not started | | | | |
-| L54 Semantic conflicts | Not started | | | | |
-| L55 Milestone 3: Ship a release with parallel agents | Not started | | | | |
-| L56 Subagents | Not started | | | | |
-| L57 MCP tools | Not started | | | | |
-| L58 Prompt injection | Not started | | | | |
-| L59 Hooks | Not started | | | | |
-| L60 Projects | Not started | | | | |
-| L61 Project subscriptions | Not started | | | | |
-| L62 Automations | Not started | | | | |
-| L63 Pruning the brain | Not started | | | | |
-| L64 Measuring your agent workflow | Not started | | | | |
-| L65 Full-loop practice | Not started | | | | |
-| L66 Agent capstone | Not started | | | | |
+| L21 A bad release | Not started | | | | |
+| L22 Editor navigation | Not started | | | | |
+| L23 Tab and Inline Edit | Not started | | | | |
+| L24 Agent chat basics | Not started | | | | |
+| L25 Sandbox and run modes | Not started | | | | |
+| L26 Secrets and .cursorignore | Not started | | | | |
+| L27 Undoing agent work | Not started | | | | |
+| L28 Writing a work request | Not started | | | | |
+| L29 Plan and Ask modes | Not started | | | | |
+| L30 Chat scope | Not started | | | | |
+| L31 The Agents Window | Not started | | | | |
+| L32 Review and testing | Not started | | | | |
+| L33 Tests that lie | Not started | | | | |
+| L34 Triage a review finding | Not started | | | | |
+| L35 Revising agent work | Not started | | | | |
+| L36 Debugging with an agent | Not started | | | | |
+| L37 The project brain | Not started | | | | |
+| L38 Scoped rules | Not started | | | | |
+| L39 Milestone 1: Solo agent sprint | Not started | | | | |
+| L40 Map an unfamiliar codebase | Not started | | | | |
+| L41 Characterize, then refactor | Not started | | | | |
+| L42 Dependencies and one setup command | Not started | | | | |
+| L43 More automatic checks | Not started | | | | |
+| L44 A fresh clone | Not started | | | | |
+| L45 Milestone 2: Take over a teammate's branch | Not started | | | | |
+| L46 Git worktrees | Not started | | | | |
+| L47 Cursor /worktree | Not started | | | | |
+| L48 Worktree setup | Not started | | | | |
+| L49 Cloud agents | Not started | | | | |
+| L50 Cloud environment setup | Not started | | | | |
+| L51 Moving work between local and cloud | Not started | | | | |
+| L52 Break a big request into tasks | Not started | | | | |
+| L53 GitHub Issues as the request queue | Not started | | | | |
+| L54 Two requests at once | Not started | | | | |
+| L55 Semantic conflicts | Not started | | | | |
+| L56 Milestone 3: Ship a release with parallel agents | Not started | | | | |
+| L57 Subagents | Not started | | | | |
+| L58 MCP tools | Not started | | | | |
+| L59 Prompt injection | Not started | | | | |
+| L60 Hooks | Not started | | | | |
+| L61 Projects | Not started | | | | |
+| L62 Project subscriptions | Not started | | | | |
+| L63 Automations | Not started | | | | |
+| L64 Pruning the brain | Not started | | | | |
+| L65 Measuring your agent workflow | Not started | | | | |
+| L66 Full-loop practice | Not started | | | | |
+| L67 Agent capstone | Not started | | | | |
 
 
 ## Mistakes to revisit
