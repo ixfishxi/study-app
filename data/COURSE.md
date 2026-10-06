@@ -20,15 +20,15 @@ progress lives in the files, not the chat.
 
 ## Course map
 
-The course has ten parts, taught in order, plus an optional Salesforce bridge
-after the capstone. Each required lesson starts only after the one before it
-is Mastered. S1–S5 start only after the capstone, in order, and only if you
-choose them. They do not gate Lesson 16.
+The course has ten parts, taught in order, plus the Salesforce bridge after
+the capstone. Each lesson starts only after the one before it is Mastered.
+S1–S5 are required. They start after the capstone, in order, and Lesson 16
+starts after S5.
 
 | Part | Lessons | What it teaches | Why it's a separate part |
 |------|---------|-----------------|--------------------------|
 | 1. Core Git workflow | L0–L15, Capstone | Git and GitHub by hand, from a request to a merged pull request, plus history cleanup, cherry-pick and stash, tags, and bisect | Everything later depends on it. The capstone proves the whole Git workflow before any agent work. |
-| Salesforce bridge (optional) | S1–S5, callback on L37 | A reviewed commit promoted through Salesforce orgs, a change set that matches that commit, and a production deploy described on paper | Orgs are deploy targets. The bridge applies Part 1 to that flow and does not gate Part 2. |
+| Salesforce bridge | S1–S5, callback on L37 | A reviewed commit promoted through Salesforce orgs, a change set that matches that commit, and a production deploy described on paper | Orgs are deploy targets. Required after the capstone. Lesson 16 starts after S5. |
 | 2. Cursor's AI tools | L16–L21 | Editor navigation, Tab and Inline Edit, agent chat, sandbox and run modes, secrets, undoing agent work | Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request. |
 | 3. Directing an agent | L22–L25 | Writing a work request, Plan and Ask modes, chat scope, the Agents Window | A clear request, an approved plan, and one request per chat decide most of what the agent gets right. |
 | 4. Checking and correcting agent work | L26–L30 | Review and testing, weakened tests, triaging review findings, revising agent work, debugging | "Finished" from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence. |
@@ -643,15 +643,15 @@ prompting.
 
 Any Shaky or Missed item goes into "Mistakes to revisit" for a targeted retest.
 
-When the capstone is Mastered, the next chat chooses this bridge or Lesson 16.
-The bridge does not gate Lesson 16.
+When the capstone is Mastered, the next chat starts S1.
 
 ---
 
-## Salesforce bridge (optional)
+## Salesforce bridge
 
-This follows the Git capstone. Take it, or go straight to Lesson 16. Skipping
-it is a finished choice. S1–S5 use the same four gates as every other lesson.
+This follows the Git capstone and comes before Lesson 16. S1–S5 are required
+and use the same four gates as every other lesson. Their gates count toward
+the course percentage.
 S2 and S3 run in `sfwork\`, not in `practice\`. You name the Salesforce sandbox
 when S2 starts. S4 and S5 stay on paper. No lesson in this bridge deploys to
 production or uploads a change set.
@@ -824,9 +824,8 @@ The source of truth is the Git commit. Each org has one job:
 
 ## Part 2: Cursor's AI tools
 
-This follows the Git capstone. You may take the Salesforce bridge first. Parts
-2 to 10 start once the capstone is done, whether or not you finish S1–S5. You
-still need to be able to branch, commit, push, and open a pull request.
+This follows S5. Parts 2 to 10 start once the capstone and S1–S5 are Mastered.
+You still need to be able to branch, commit, push, and open a pull request.
 
 Each lesson from here on runs like the lessons before it: a short concept, one
 demo, you predict, you perform in `practice\`, we inspect, you explain it, then
@@ -1703,10 +1702,10 @@ interpreter from the Command Palette.
 - Explain what the command-line test catches that the unit tests do not.
 - Explain why a new check only protects `main` once it is required.
 
-**Salesforce callback.** If S3 is Mastered, you also add a workflow that deploys
-the merge commit to your integration sandbox. Production stays out of this
-lesson. A package version installed in each org is the later form of that same
-promotion. If S3 is not Mastered, this lesson stays the checks above.
+**Salesforce callback.** You also add a workflow that deploys the merge commit
+to your integration sandbox. S5 is already Mastered by this point. Production
+stays out of this lesson. A package version installed in each org is the later
+form of that same promotion.
 
 ---
 
