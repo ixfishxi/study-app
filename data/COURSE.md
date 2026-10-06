@@ -21,21 +21,21 @@ progress lives in the files, not the chat.
 ## Course map
 
 The course has eleven parts, taught in order. Each lesson starts only after
-the one before it is Mastered. Part 2 is L16–L20. Lesson 21 starts after L20.
+the one before it is Mastered. Part 2 is L16–L21. Lesson 22 starts after L21.
 
 | Part | Lessons | What it teaches | Why it's a separate part |
 |------|---------|-----------------|--------------------------|
 | 1. Core Git workflow | L0–L15, Capstone | Git and GitHub by hand, from a request to a merged pull request, plus history cleanup, cherry-pick and stash, tags, and bisect | Everything later depends on it. The capstone proves the whole Git workflow before any agent work. |
-| 2. Salesforce orgs | L16–L20, callback on L42 | A reviewed commit promoted through Salesforce orgs, a change set that matches that commit, and a production deploy described on paper | Orgs are deploy targets. Part 3 starts after L20. |
-| 3. Cursor's AI tools | L21–L26 | Editor navigation, Tab and Inline Edit, agent chat, sandbox and run modes, secrets, undoing agent work | Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request. |
-| 4. Directing an agent | L27–L30 | Writing a work request, Plan and Ask modes, chat scope, the Agents Window | A clear request, an approved plan, and one request per chat decide most of what the agent gets right. |
-| 5. Checking and correcting agent work | L31–L35 | Review and testing, weakened tests, triaging review findings, revising agent work, debugging | "Finished" from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence. |
-| 6. The project brain | L36–L38 | `AGENTS.md`, rules, and skills, where each piece of guidance belongs, and Milestone 1 (a solo agent sprint) | What should outlast a chat goes in committed files, before any work runs in a copy. The milestone joins Parts 3–6 on one real feature. |
-| 7. Code you didn't write | L39–L40 | Mapping an unfamiliar codebase, characterization tests, small-step refactors | Most real work is in code someone else wrote. Learn it and pin down its behavior before you change it. |
-| 8. A repo that stands on its own | L41–L44 | Pinned dependencies and one setup command, a command-line test and a linter in CI, a fresh clone, and Milestone 2 (taking over a teammate's branch) | Every copy starts from what's committed. The repo must set itself up and check itself without your machine. |
-| 9. Isolated copies | L45–L50 | Git worktrees, Cursor `/worktree`, cloud agents, setting up each copy to test, moving work between local and cloud | Each request gets its own copy, so your folder and `main` stay as they are until you accept the work. |
-| 10. Planning and parallel work | L51–L55 | Task breakdown, GitHub Issues, two requests at once, semantic conflicts, and Milestone 3 (a release built by parallel agents) | Bigger and parallel work collides in ways a single request never does. |
-| 11. Tools, guardrails, and automation | L56–L66 | Subagents, MCP, prompt injection, hooks, Projects, subscriptions, Automations, brain pruning, measuring the workflow, and an agent capstone | More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off. |
+| 2. Salesforce orgs | L16–L21, callback on L43 | A reviewed commit promoted through Salesforce orgs, a change set that matches that commit, a production deploy described on paper, and a bad release corrected on a branch | Orgs are deploy targets. Part 3 starts after L21. |
+| 3. Cursor's AI tools | L22–L27 | Editor navigation, Tab and Inline Edit, agent chat, sandbox and run modes, secrets, undoing agent work | Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request. |
+| 4. Directing an agent | L28–L31 | Writing a work request, Plan and Ask modes, chat scope, the Agents Window | A clear request, an approved plan, and one request per chat decide most of what the agent gets right. |
+| 5. Checking and correcting agent work | L32–L36 | Review and testing, weakened tests, triaging review findings, revising agent work, debugging | "Finished" from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence. |
+| 6. The project brain | L37–L39 | `AGENTS.md`, rules, and skills, where each piece of guidance belongs, and Milestone 1 (a solo agent sprint) | What should outlast a chat goes in committed files, before any work runs in a copy. The milestone joins Parts 3–6 on one real feature. |
+| 7. Code you didn't write | L40–L41 | Mapping an unfamiliar codebase, characterization tests, small-step refactors | Most real work is in code someone else wrote. Learn it and pin down its behavior before you change it. |
+| 8. A repo that stands on its own | L42–L45 | Pinned dependencies and one setup command, a command-line test and a linter in CI, a fresh clone, and Milestone 2 (taking over a teammate's branch) | Every copy starts from what's committed. The repo must set itself up and check itself without your machine. |
+| 9. Isolated copies | L46–L51 | Git worktrees, Cursor `/worktree`, cloud agents, setting up each copy to test, moving work between local and cloud | Each request gets its own copy, so your folder and `main` stay as they are until you accept the work. |
+| 10. Planning and parallel work | L52–L56 | Task breakdown, GitHub Issues, two requests at once, semantic conflicts, and Milestone 3 (a release built by parallel agents) | Bigger and parallel work collides in ways a single request never does. |
+| 11. Tools, guardrails, and automation | L57–L67 | Subagents, MCP, prompt injection, hooks, Projects, subscriptions, Automations, brain pruning, measuring the workflow, and an agent capstone | More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off. |
 
 ---
 
@@ -647,11 +647,12 @@ When the capstone is Mastered, the next chat starts L16.
 
 ## Part 2: Salesforce orgs
 
-This follows the Git capstone and comes before Lesson 21. L16–L20 are required
+This follows the Git capstone and comes before Lesson 22. L16–L21 are required
 and use the same four gates as every other lesson. Their gates count toward
 the course percentage.
 L17 and L18 run in `sfwork\`, not in `practice\`. You name the Salesforce sandbox
-when L17 starts. L19 and L20 stay on paper. No lesson in this bridge deploys to
+when L17 starts. L19 and L20 stay on paper. L21 corrects a bad release in
+`sfwork\` and rewrites the L20 note. No lesson in this part deploys to
 production or uploads a change set.
 
 The source of truth is the Git commit. Each org has one job:
@@ -820,9 +821,44 @@ The source of truth is the Git commit. Each org has one job:
 
 ---
 
+### L21: A bad release
+
+*The tag you would have sent to production is wrong. Correct it, and rewrite the note.*
+
+**Objectives**
+- Look at `main` and the tag before you choose how to correct the release.
+- The correction is a branch, proof, and a merge. You do not edit the tagged
+  commit in place.
+- Fix forward or back the release out. Either way, `main` and a new tag name
+  the snapshot you would send now.
+- The L20 deployment note is rewritten to name that tag, and to name the tag
+  you withdrew. You still do not deploy to production.
+
+**Commands:** `git show`, `git tag`, `git log --oneline`, `git status`
+
+**Cursor:** the Source Control Graph, to see `main` and the tags.
+
+**Hands-on**
+- The instructor shows a tagged commit that should not be the release. You say
+  where `main` and the tag point, and whether the correction is a new commit
+  or a back-out.
+
+**Independent exercise**
+- The instructor tells you first, then makes the L18 release the bad one, in
+  `sfwork\`. Show `git show` on that tag and on `main`. Correct it on a branch
+  and merge. Tag the correction. Rewrite the L20 deployment note so it names
+  the tag production should be on and the tag you withdrew. Prove the note and
+  `git show` name the same current tag. Do not deploy.
+
+**Mastery check**
+- Explain why you did not change the old tag's commit in place.
+- Explain what production would receive now, and why you still did not deploy.
+
+---
+
 ## Part 3: Cursor's AI tools
 
-This follows L20. Parts 3 to 11 start once the capstone and L16–L20 are Mastered.
+This follows L21. Parts 3 to 11 start once the capstone and L16–L21 are Mastered.
 You still need to be able to branch, commit, push, and open a pull request.
 
 Each lesson from here on runs like the lessons before it: a short concept, one
@@ -843,7 +879,7 @@ branch: finding your way in the editor, small edits with Tab and Inline Edit, an
 agent chat, what its commands can reach, keeping secrets out of its reach, and
 undoing what it did.
 
-### L21: Editor navigation (Command Palette, Quick Open, symbols, and search)
+### L22: Editor navigation (Command Palette, Quick Open, symbols, and search)
 
 *Find any command, file, or function without scrolling.*
 
@@ -880,7 +916,7 @@ References, Search, and Keyboard Shortcuts (Ctrl+K, then Ctrl+S).
 
 ---
 
-### L22: Tab and Inline Edit (small edits in the editor)
+### L23: Tab and Inline Edit (small edits in the editor)
 
 *Tab finishes what you started. Inline Edit changes a selection. You accept or reject each one.*
 
@@ -918,7 +954,7 @@ indicator in the status bar to snooze it or turn it off.
 
 ---
 
-### L23: Agent chat basics (context, commands, and models)
+### L24: Agent chat basics (context, commands, and models)
 
 *Start a chat, give it the right context, and read every command before it runs.*
 
@@ -957,7 +993,7 @@ the model picker, and the command approval prompt.
 
 ---
 
-### L24: Sandbox and run modes (what agent commands can reach)
+### L25: Sandbox and run modes (what agent commands can reach)
 
 *Most agent commands run inside a sandbox. Know what it can reach, and what happens when it needs more.*
 
@@ -998,7 +1034,7 @@ shows whether a command ran in the sandbox.
 
 ---
 
-### L25: Secrets and `.cursorignore` (what agents can't read)
+### L26: Secrets and `.cursorignore` (what agents can't read)
 
 *`.cursorignore` stops the agent reading. `.gitignore` stops the commit.*
 
@@ -1034,7 +1070,7 @@ settings, for patterns you want in every project.
 
 ---
 
-### L26: Undoing agent work (Keep, Undo, checkpoints, and Git)
+### L27: Undoing agent work (Keep, Undo, checkpoints, and Git)
 
 *Commit first. Then any agent step can be taken back.*
 
@@ -1078,7 +1114,7 @@ How to hand an agent one request: write it so the agent can check its own work,
 approve a plan before any file changes, keep each chat to one request, and find
 your conversations again when there are many.
 
-### L27: Writing a work request (outcome, files, and a check the agent can run)
+### L28: Writing a work request (outcome, files, and a check the agent can run)
 
 *A specific request with a check the agent can run beats a vague one.*
 
@@ -1114,7 +1150,7 @@ your conversations again when there are many.
 
 ---
 
-### L28: Plan and Ask modes (approve the plan before any edit)
+### L29: Plan and Ask modes (approve the plan before any edit)
 
 *The agent researches and writes a plan. Nothing changes until you accept it.*
 
@@ -1150,7 +1186,7 @@ button. "Save to workspace" for a plan you want to keep.
 
 ---
 
-### L29: Chat scope (one request per chat, and when to start fresh)
+### L30: Chat scope (one request per chat, and when to start fresh)
 
 *New request, new chat. A chat is not the brain.*
 
@@ -1160,7 +1196,7 @@ button. "Save to workspace" for a plan you want to keep.
   focus. A new chat starts clean.
 - A chat's history, and any saved chat memory, stay in Cursor. They are not in
   the repo.
-- What should last needs a place in the repo. The project brain lesson (L36)
+- What should last needs a place in the repo. The project brain lesson (L37)
   builds that place.
 
 **Commands:** `git status`, `git log --oneline`
@@ -1180,7 +1216,7 @@ its transcript. Saved chat memories, if your Cursor version has them.
 - Request 2: *"Remove the duplicated test instructions from the README."* Start
   it in a new chat. Predict whether the new chat follows your preference. Show
   from Git whether the preference is anywhere in the repo. Keep a note of it for
-  the project brain lesson (L36).
+  the project brain lesson (L37).
 
 **Mastery check**
 - Explain why a saved chat memory still does not count as the project brain.
@@ -1188,7 +1224,7 @@ its transcript. Saved chat memories, if your Cursor version has them.
 
 ---
 
-### L30: The Agents Window (every agent and conversation in one place)
+### L31: The Agents Window (every agent and conversation in one place)
 
 *One place to see every agent, workspace, and conversation.*
 
@@ -1212,7 +1248,7 @@ workspace in the editor.
   say what the sidebar showed.
 
 **Independent exercise**
-- Open the Agents Window and add `practice\` as a workspace. Find your L29 chats
+- Open the Agents Window and add `practice\` as a workspace. Find your L30 chats
   by searching for a word you used in them.
 - Start a new agent on `practice\` from the Agents Window: *"Add a
   miles-to-feet conversion (`mi-to-ft`)."* on a branch. Before it edits, predict
@@ -1232,7 +1268,7 @@ after the agent says it's done: prove the work, check that the tests still mean
 something, decide which review findings are real, send problems back to the same
 agent, and track down a bug with evidence instead of guesses.
 
-### L31: Review and testing (proof before merge)
+### L32: Review and testing (proof before merge)
 
 *Finished is not done until something checks it.*
 
@@ -1266,7 +1302,7 @@ Source Control view. Bugbot on pull requests, if you turn it on.
 
 ---
 
-### L32: Tests that lie (catching weakened tests)
+### L33: Tests that lie (catching weakened tests)
 
 *Green checks prove nothing if the tests were changed to pass.*
 
@@ -1302,7 +1338,7 @@ Source Control view. Bugbot on pull requests, if you turn it on.
 
 ---
 
-### L33: Triage a review finding (fix it or explain it)
+### L34: Triage a review finding (fix it or explain it)
 
 *Not every finding is right. Check it, then fix it or answer it with evidence.*
 
@@ -1339,7 +1375,7 @@ replying on the pull request.
 
 ---
 
-### L34: Revising agent work (feedback to the same agent, same branch)
+### L35: Revising agent work (feedback to the same agent, same branch)
 
 *When review finds a problem, the fix goes back to the same agent, on the same branch.*
 
@@ -1348,7 +1384,7 @@ replying on the pull request.
   chat, and the fix goes on the same branch, like review feedback in L8.
 - Good feedback names the file and line, what it does now, and what it should do.
 - Prove the work again after the fix. The earlier proof no longer counts.
-- If the approach is wrong, not just a detail, revert and fix the plan instead (L28).
+- If the approach is wrong, not just a detail, revert and fix the plan instead (L29).
 
 **Commands:** `gh pr view --comments`, `gh pr diff`, `gh pr checks`,
 `git log --oneline`, `python -m unittest`
@@ -1374,7 +1410,7 @@ replying on the pull request.
 
 ---
 
-### L35: Debugging with an agent (Debug mode, evidence first)
+### L36: Debugging with an agent (Debug mode, evidence first)
 
 *Reproduce it, collect evidence, then make a small fix.*
 
@@ -1420,7 +1456,7 @@ feature through everything since Part 3.
 The brain files belong in `practice\`, not in this course folder's `.cursor\`
 rules. Those course rules tell the instructor how to teach.
 
-### L36: The project brain (AGENTS.md, rules, and skills)
+### L37: The project brain (AGENTS.md, rules, and skills)
 
 *A chat is not the memory.*
 
@@ -1447,19 +1483,19 @@ invoking a skill with `/` in the chat.
 - On a branch in `practice\`, add an `AGENTS.md`, one short rule, and one short
   skill, in your own words. They should say how to run this repo's tests, that
   `main` changes only when you accept a request, and the preference you kept
-  from L29. Review, merge, and push.
+  from L30. Review, merge, and push.
 - Start a new chat and give it a small request without repeating any of those
   instructions. Predict whether it follows them. Prove from Git and GitHub that
   the files are on `main`.
 
 **Mastery check**
-- Explain why the L29 preference was not part of the project brain until you
+- Explain why the L30 preference was not part of the project brain until you
   committed it.
 - Explain what a later worktree or cloud agent will get from these files, and why.
 
 ---
 
-### L37: Scoped rules (and which brain file to use)
+### L38: Scoped rules (and which brain file to use)
 
 *Put each piece of guidance where it applies, and nowhere else.*
 
@@ -1486,8 +1522,8 @@ invoking a skill with `/` in the chat.
 
 **Independent exercise**
 - On a branch in `practice\`, add a rule that applies only to test files and
-  says tests must not be weakened (L32). Move one piece of guidance from your
-  L36 brain files to the home where it belongs, and remove it from the old place.
+  says tests must not be weakened (L33). Move one piece of guidance from your
+  L37 brain files to the home where it belongs, and remove it from the old place.
 - Predict which of two requests picks up the test rule: one that edits
   `README.md`, and one that adds a test. Show evidence from each chat, then take
   it through a pull request.
@@ -1498,7 +1534,7 @@ invoking a skill with `/` in the chat.
 
 ---
 
-### L38: Milestone 1: Solo agent sprint (Parts 3–6 on one real feature)
+### L39: Milestone 1: Solo agent sprint (Parts 3–6 on one real feature)
 
 *One agent, one real feature, and everything since Part 3, without being told which lesson comes next.*
 
@@ -1511,9 +1547,9 @@ invoking a skill with `/` in the chat.
 - Catch the planted traps: a review finding that's wrong, and a chance for the
   agent to weaken a test.
 
-**Commands:** anything from L21 to L37
+**Commands:** anything from L22 to L38
 
-**Cursor:** anything from L21 to L37, chosen by you.
+**Cursor:** anything from L22 to L38, chosen by you.
 
 **Hands-on**
 - No demo. Before you start, you say your plan: the steps in order and what each
@@ -1545,7 +1581,7 @@ Most real work happens in code someone else wrote. Learn it before you change
 it: map it and check the map, then pin down what it does today before you
 reshape it.
 
-### L39: Map an unfamiliar codebase (a code map in the brain)
+### L40: Map an unfamiliar codebase (a code map in the brain)
 
 *Before changing code you didn't write, learn where things are, and check what the agent tells you.*
 
@@ -1553,7 +1589,7 @@ reshape it.
 - Start by asking, not editing: the entry points, how data moves, where the
   tests are, and what is risky to touch.
 - An agent's summary can be wrong. Check each claim against the code with the
-  navigation from L21.
+  navigation from L22.
 - Save what you learned as a short code map in the brain, so the next chat and
   every copy starts with it.
 - Keep the map short, and point to files instead of copying code.
@@ -1581,7 +1617,7 @@ reshape it.
 
 ---
 
-### L40: Characterize, then refactor in small steps
+### L41: Characterize, then refactor in small steps
 
 *Pin down what the code does today, then change its shape without changing what it does.*
 
@@ -1604,7 +1640,7 @@ reshape it.
   the test protected.
 
 **Independent exercise**
-- On a branch, write characterization tests for the teammate module from L39,
+- On a branch, write characterization tests for the teammate module from L40,
   with an agent's help, including at least one odd case. Commit them.
 - Plan a refactor of that module in at least three small steps, with one commit
   per step, pushing each. Predict which step is most likely to break a test.
@@ -1625,7 +1661,7 @@ set itself up and check itself: pinned dependencies with one setup command,
 more automatic checks in CI, and a fresh clone that proves none of it depends on
 your machine. The part ends with Milestone 2: taking over a teammate's branch.
 
-### L41: Dependencies and one setup command (pinned versions)
+### L42: Dependencies and one setup command (pinned versions)
 
 *The repo lists what it needs, at exact versions, and sets itself up with one command.*
 
@@ -1665,7 +1701,7 @@ interpreter from the Command Palette.
 
 ---
 
-### L42: More automatic checks (a command-line test and a linter in CI)
+### L43: More automatic checks (a command-line test and a linter in CI)
 
 *Tests check behavior. Other checks catch other mistakes, and CI runs them all on every pull request.*
 
@@ -1676,7 +1712,7 @@ interpreter from the Command Palette.
 - Each check is another signal an agent can run by itself, and another thing
   that must be green before you accept.
 - Add the checks to the CI workflow from L6, and make them required, like the tests.
-- Fix what a check finds, or configure it on purpose. Don't silence it to get green (L32).
+- Fix what a check finds, or configure it on purpose. Don't silence it to get green (L33).
 
 **Commands:** `python -m unittest`, the linter's check command, `gh pr checks`,
 `gh run view --log-failed`
@@ -1691,7 +1727,7 @@ interpreter from the Command Palette.
 **Independent exercise**
 - On a branch, add one command-line test that runs `converter.py` the way a user
   would and checks what it prints.
-- Add the linter from L41 to the CI workflow next to the tests, and make both
+- Add the linter from L42 to the CI workflow next to the tests, and make both
   required on `main`. Predict whether the current code passes the linter. Fix or
   deliberately configure what it finds. Show every check green on the pull
   request, then merge.
@@ -1701,13 +1737,13 @@ interpreter from the Command Palette.
 - Explain why a new check only protects `main` once it is required.
 
 **Salesforce callback.** You also add a workflow that deploys the merge commit
-to your integration sandbox. L20 is already Mastered by this point. Production
+to your integration sandbox. L21 is already Mastered by this point. Production
 stays out of this lesson. A package version installed in each org is the later
 form of that same promotion.
 
 ---
 
-### L43: A fresh clone (does the repo work without your machine?)
+### L44: A fresh clone (does the repo work without your machine?)
 
 *Clone the repo into a new folder. If it doesn't set up and pass there, a cloud agent can't either.*
 
@@ -1721,7 +1757,7 @@ form of that same promotion.
 - Fix what is missing in the repo, not on your machine.
 
 **Commands:** `git clone <url> <folder>`, `git remote -v`, `git log --oneline -3`,
-`git config --show-scope -l`, the setup command from L41, `python -m unittest`,
+`git config --show-scope -l`, the setup command from L42, `python -m unittest`,
 and the linter.
 
 **Cursor:** the Command Palette's Git: Clone, and File > Open Folder.
@@ -1743,7 +1779,7 @@ and the linter.
 
 ---
 
-### L44: Milestone 2: Take over a teammate's branch (Parts 7–8 with L12)
+### L45: Milestone 2: Take over a teammate's branch (Parts 7–8 with L12)
 
 *Learn someone else's code, pin it down, tidy its history, and leave the repo able to stand on its own.*
 
@@ -1754,7 +1790,7 @@ and the linter.
 - Leave the repo self-sufficient: one setup command, the checks in CI, and a fresh
   clone that passes.
 
-**Commands:** anything from L12 and L39 to L43, including `git rebase -i`,
+**Commands:** anything from L12 and L40 to L44, including `git rebase -i`,
 `git clone`, and `gh pr checks`
 
 **Cursor:** Ask mode, Go to Definition, Find All References, Plan mode, and the agent chat.
@@ -1787,7 +1823,7 @@ another machine (cloud agents). Each kind of copy also needs setup so it can
 install and test, and you learn to move a task between your machine and the
 cloud.
 
-### L45: Git worktrees (one repo, several folders)
+### L46: Git worktrees (one repo, several folders)
 
 *A second checkout of the same repo. The main folder stays put.*
 
@@ -1812,7 +1848,7 @@ folders. The next lesson is Cursor's `/worktree` command.
 
 **Independent exercise**
 - Create a worktree on a new branch, outside `practice\`. Before you open it,
-  predict whether your L36 brain files are in the new folder, then check.
+  predict whether your L37 brain files are in the new folder, then check.
   Change a file only in that folder. Predict `git status` in both folders before
   you look. Remove the worktree. Show what happened to the extra folder and to
   the branch.
@@ -1824,7 +1860,7 @@ folders. The next lesson is Cursor's `/worktree` command.
 
 ---
 
-### L46: Cursor `/worktree` (review, then apply or discard)
+### L47: Cursor `/worktree` (review, then apply or discard)
 
 *Start with `/worktree`. Review the diff. Apply or discard. Then delete.*
 
@@ -1848,7 +1884,7 @@ Setting up a new worktree so it can test is the next lesson.
 
 **Independent exercise**
 - Request: *"Add a grams-to-kilograms conversion (`g-to-kg`)."*
-  Start it with `/worktree`. Check it with at least one kind of proof from L31.
+  Start it with `/worktree`. Check it with at least one kind of proof from L32.
   Apply it or discard it, then `/delete-worktree`. Prove the extra checkout is gone, and prove whether the
   `practice\` folder received the change.
 
@@ -1858,7 +1894,7 @@ Setting up a new worktree so it can test is the next lesson.
 
 ---
 
-### L47: Worktree setup (`worktrees.json`, so local copies can test)
+### L48: Worktree setup (`worktrees.json`, so local copies can test)
 
 *`.cursor/worktrees.json` sets up each new worktree. Your main checkout stays as it is.*
 
@@ -1881,12 +1917,12 @@ what ran. `/worktree`, `/apply-worktree`, `/delete-worktree`.
 
 **Independent exercise**
 - Add `.cursor/worktrees.json` so each new worktree creates its own Python
-  virtual environment, runs your setup command from L41, and runs the tests
+  virtual environment, runs your setup command from L42, and runs the tests
   once. Take it through a pull request.
 - Start `/worktree` with the request: *"Add a miles-per-hour to
   kilometers-per-hour conversion (`mph-to-kph`)."* Predict what `git status`
   shows in the new worktree right after setup, and in `practice\`. Prove both
-  from the setup output and Git. Finish the request as in L46.
+  from the setup output and Git. Finish the request as in L47.
 
 **Mastery check**
 - Explain why a fresh worktree needed setup at all.
@@ -1894,7 +1930,7 @@ what ran. `/worktree`, `/apply-worktree`, `/delete-worktree`.
 
 ---
 
-### L48: Cloud agents (work on another machine, returned as a PR)
+### L49: Cloud agents (work on another machine, returned as a PR)
 
 *The agent works on its own branch and opens a pull request. `main` changes only when you accept it.*
 
@@ -1922,7 +1958,7 @@ Cursor asks.
 - Request: *"Add a meters-to-centimeters conversion (`m-to-cm`)."*
   Let the agent open the pull request. Before you merge, predict whether
   GitHub `main` and your local `main` contain the change. Check the pull
-  request with the proof from L31. Accept the request only if you mean to.
+  request with the proof from L32. Accept the request only if you mean to.
   Pull, and prove when `main` changed.
 
 **Mastery check**
@@ -1931,7 +1967,7 @@ Cursor asks.
 
 ---
 
-### L49: Cloud environment setup (`environment.json` and secrets)
+### L50: Cloud environment setup (`environment.json` and secrets)
 
 *The cloud environment installs and tests on another machine.*
 
@@ -1971,7 +2007,7 @@ plan and can cost money.
 
 ---
 
-### L50: Moving work between local and cloud (`/in-cloud` and back)
+### L51: Moving work between local and cloud (`/in-cloud` and back)
 
 *Hand a task to the cloud, keep working, then bring the result back to test.*
 
@@ -2001,7 +2037,7 @@ Cursor plan and can cost money.
   different branch. Send one follow-up to the cloud agent from the web or your phone.
 - When it opens a pull request, bring its branch to your machine and run the
   tests. Predict which branch your folder is on at each step. Check the pull
-  request with the proof from L31, then merge.
+  request with the proof from L32, then merge.
 
 **Mastery check**
 - Explain what stayed free on your machine while the cloud agent worked.
@@ -2017,7 +2053,7 @@ ways parallel work collides: text conflicts that Git reports, and clashes in
 behavior that it doesn't. The part ends with Milestone 3: shipping a release
 built by parallel agents.
 
-### L51: Break a big request into tasks (what goes first, what runs in parallel)
+### L52: Break a big request into tasks (what goes first, what runs in parallel)
 
 *Some tasks must go first. Others can run side by side.*
 
@@ -2050,7 +2086,7 @@ built by parallel agents.
 
 ---
 
-### L52: GitHub Issues as the request queue (and `@cursor`)
+### L53: GitHub Issues as the request queue (and `@cursor`)
 
 *Each request becomes an issue. Each pull request closes one.*
 
@@ -2075,7 +2111,7 @@ uses your Cursor plan and can cost money.
   instructor watching, and you say what each part of it is for.
 
 **Independent exercise**
-- Turn the remaining tasks from L51 into issues, one per task, each with an
+- Turn the remaining tasks from L52 into issues, one per task, each with an
   outcome and done-when.
 - Start one task by commenting `@cursor` on its issue. Do another with a local
   agent. Predict what happens to each issue when its pull request merges, and
@@ -2087,7 +2123,7 @@ uses your Cursor plan and can cost money.
 
 ---
 
-### L53: Two requests at once (parallel copies, and the one that goes stale)
+### L54: Two requests at once (parallel copies, and the one that goes stale)
 
 *Run two at once. When one merges, the other must catch up and be proven again.*
 
@@ -2123,7 +2159,7 @@ uses your Cursor plan and can cost money.
 
 ---
 
-### L54: Semantic conflicts (both pass alone, fail together)
+### L55: Semantic conflicts (both pass alone, fail together)
 
 *Git merges the text. Only a test or a review catches a clash in behavior.*
 
@@ -2161,7 +2197,7 @@ ruleset page on GitHub.
 
 ---
 
-### L55: Milestone 3: Ship a release with parallel agents (Parts 9–10 with L14)
+### L56: Milestone 3: Ship a release with parallel agents (Parts 9–10 with L14)
 
 *Split a request, run it in parallel isolated copies, catch the clash, and ship a tagged release.*
 
@@ -2173,7 +2209,7 @@ ruleset page on GitHub.
 - Ship: tag a release with notes (L14), then record what you learned in a
   separate knowledge commit.
 
-**Commands:** anything from L45 to L54, including `gh issue list`, `git tag -a`,
+**Commands:** anything from L46 to L55, including `gh issue list`, `git tag -a`,
 and `gh release create`
 
 **Cursor:** `/worktree`, a cloud agent, the Agents Window, and Plan mode. Cloud
@@ -2210,7 +2246,7 @@ automations that still end in work you review. The part ends by pruning the
 brain, measuring whether your workflow pays off, a guided run through every
 control, and a capstone you do on your own.
 
-### L56: Subagents (workers that search, test, or review)
+### L57: Subagents (workers that search, test, or review)
 
 *The parent request stays in charge. Workers search, test, or review.*
 
@@ -2246,7 +2282,7 @@ in `.cursor/agents/`. `/name` to call a worker by name.
 
 ---
 
-### L57: MCP tools (one tool, least access)
+### L58: MCP tools (one tool, least access)
 
 *One MCP server, with only the access it needs.*
 
@@ -2284,7 +2320,7 @@ with `${env:NAME}`. The tool approval prompt. Output panel > **MCP Logs**.
 
 ---
 
-### L58: Prompt injection (read it as data, not orders)
+### L59: Prompt injection (read it as data, not orders)
 
 *Anything an agent reads can contain instructions. Treat it as data.*
 
@@ -2293,13 +2329,13 @@ with `${env:NAME}`. The tool approval prompt. Output panel > **MCP Logs**.
   instructions written to steer an agent.
 - The agent should report such text, not follow it. You check what it actually did.
 - Keep reading and writing apart: an agent that reads untrusted text should have
-  the least power to write (L57).
+  the least power to write (L58).
 - Your defenses stack: least access for tools, approvals, hooks (next lesson),
   and review before merge.
 
 **Commands:** `gh issue view`, `git status`, `git log --oneline origin/main`
 
-**Cursor:** the tool approval prompt, and the GitHub tool from L57 or `gh`.
+**Cursor:** the tool approval prompt, and the GitHub tool from L58 or `gh`.
 
 **Hands-on**
 - In `sandbox\`, the instructor puts a harmless planted instruction inside a text
@@ -2319,7 +2355,7 @@ with `${env:NAME}`. The tool approval prompt. Output panel > **MCP Logs**.
 
 ---
 
-### L59: Hooks (a hard block on production writes)
+### L60: Hooks (a hard block on production writes)
 
 *A rule can be ignored. A hook can block. Keep the approval prompt too.*
 
@@ -2356,7 +2392,7 @@ command approval prompt. The run mode setting for agent commands.
 
 ---
 
-### L60: Projects (a coordinator that delegates)
+### L61: Projects (a coordinator that delegates)
 
 *A Project plans and delegates. It does not write the production change.*
 
@@ -2384,7 +2420,7 @@ Enterprise plans.
 - Create a Project on the practice repo. Give it: *"Add a yards-to-meters
   conversion (`yd-to-m`)."* Tell it the coordinator must not write the change
   itself. Predict where the change will be written.
-- Check the worker's pull request with the proof from L31, then accept or
+- Check the worker's pull request with the proof from L32, then accept or
   reject it. Then write what you learned about the coordinator into the
   knowledge files, in its own commit.
 
@@ -2394,7 +2430,7 @@ Enterprise plans.
 
 ---
 
-### L61: Project subscriptions (schedules and GitHub events)
+### L62: Project subscriptions (schedules and GitHub events)
 
 *A schedule or a GitHub event can start a new request. You still accept the result.*
 
@@ -2428,15 +2464,15 @@ the chat input. Removing a subscription from that list.
 
 ---
 
-### L62: Automations (new work from a trigger)
+### L63: Automations (new work from a trigger)
 
 *An automation starts a new cloud agent run each time its trigger fires.*
 
 **Objectives**
 - An automation runs a cloud agent in the background, on a schedule or when an
   event happens, such as CI finishing on a pull request.
-- Each run is new work. A Project subscription (L61) wakes the same coordinator
-  conversation instead. A hook (L59) runs inside an agent's own steps and can block them.
+- Each run is new work. A Project subscription (L62) wakes the same coordinator
+  conversation instead. A hook (L60) runs inside an agent's own steps and can block them.
 - Set what it can touch: which repo, which tools, and whether it may open pull
   requests. Each run costs money.
 - It still ends in a pull request or a comment you review. `main` changes only
@@ -2467,7 +2503,7 @@ Triggers such as "CI completed." Run history. Turning an automation off.
 
 ---
 
-### L63: Pruning the brain (remove what's duplicated, wrong, or unused)
+### L64: Pruning the brain (remove what's duplicated, wrong, or unused)
 
 *A brain that only grows goes stale. Remove what is duplicated, wrong, or unused.*
 
@@ -2501,7 +2537,7 @@ test the result.
 
 ---
 
-### L64: Measuring your agent workflow (time, rework, and cost)
+### L65: Measuring your agent workflow (time, rework, and cost)
 
 *Decide how to work from evidence, not habit.*
 
@@ -2537,7 +2573,7 @@ test the result.
 
 ---
 
-### L65: Full-loop practice (one request through every control)
+### L66: Full-loop practice (one request through every control)
 
 *Plan, hide secrets, test in an isolated copy, review, block, decide, then update the brain.*
 
@@ -2545,9 +2581,9 @@ test the result.
 - Take one work request through every control in order, with proof at each step.
 - Say what each step protected.
 
-**Commands:** everything from L21 to L64
+**Commands:** everything from L22 to L65
 
-**Cursor:** everything from L21 to L64. You choose which controls to use at each step.
+**Cursor:** everything from L22 to L65. You choose which controls to use at each step.
 
 **Hands-on**
 - Before you start, you list the steps in order and what each one proves. That
@@ -2556,7 +2592,7 @@ test the result.
 **Independent exercise**
 - Request: *"Add a US-gallons-to-liters conversion (`gal-to-l`)."*
   - Plan it in Plan mode. Accept the plan only after you have reviewed and edited it.
-  - Show that the fake key from L25 is hidden from the agent and can't be committed.
+  - Show that the fake key from L26 is hidden from the agent and can't be committed.
   - Run the work on a branch, in a worktree or with a cloud agent that installs
     and runs the tests.
   - Review the result with at least two kinds of proof.
@@ -2570,7 +2606,7 @@ test the result.
 
 ---
 
-### L66: Agent capstone (an unfamiliar request, scored)
+### L67: Agent capstone (an unfamiliar request, scored)
 
 *One realistic request, revealed when it starts. Minimal prompting.*
 
@@ -2579,9 +2615,9 @@ test the result.
   step yourself.
 - Handle surprises along the way without being told which lesson they come from.
 
-**Commands:** anything from L21 to L65
+**Commands:** anything from L22 to L66
 
-**Cursor:** anything from L21 to L65, chosen by you.
+**Cursor:** anything from L22 to L66, chosen by you.
 
 **Hands-on**
 - No demo. The instructor reveals the request. Before you start, you say your
