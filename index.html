@@ -336,12 +336,14 @@ function renderMd(md) {
 }
 
 // ---------- Course plan (PROGRESS.md + COURSE.md) ----------
-// Lessons are matched across files by key: "L0".."L61" and "Capstone". Every lesson counts
-// toward the completion percentage.
+// Lessons are matched across files by key: "L0".."L61", "Capstone", and optional "S1".."S3".
+// L0–L61 and the capstone count toward the completion percentage. S1–S3 do not.
 function lessonKey(name) {
   const s = String(name || "").trim();
   const m = s.match(/^(L\d+)\b/i);
   if (m) return m[1].toUpperCase();
+  const sf = s.match(/^(S\d+)\b/i);
+  if (sf) return sf[1].toUpperCase();
   if (/^capstone/i.test(s)) return "Capstone";
   return null;
 }
@@ -378,7 +380,7 @@ function parseCoursePlan(md) {
     const h3 = line.match(/^###\s+(.+?)\s*$/);
     if (h3) {
       const key = lessonKey(h3[1]);
-      cur = key ? (lessons[key] = { title: h3[1].replace(/^L\d+:\s*/i, ""), subtitle: "", objectives: [] }) : null;
+      cur = key ? (lessons[key] = { title: h3[1].replace(/^[LS]\d+:\s*/i, ""), subtitle: "", objectives: [] }) : null;
       inObjectives = false;
       continue;
     }
@@ -434,6 +436,7 @@ const LATER_PARTS = [
 ];
 
 function coursePart(key) {
+  if (/^S\d+$/i.test(key || "")) return 0;
   const m = /^L(\d+)$/i.exec(key || "");
   const n = m ? Number(m[1]) : -1;
   let part = 1;
@@ -451,14 +454,15 @@ function gateStats(rows) {
 function courseSummary() {
   const p = app.course?.progress;
   if (!p) return null;
-  const required = p.rows;
+  const required = p.rows.filter((r) => coursePart(r.key) !== 0);
+  const salesforce = p.rows.filter((r) => coursePart(r.key) === 0);
   const core = required.filter((r) => coursePart(r.key) === 1);
   const later = LATER_PARTS.map((lp) => {
     const rows = required.filter((r) => coursePart(r.key) === lp.part);
     return { ...lp, rows, stats: gateStats(rows) };
   });
   const lastLesson = Math.max(0, ...required.map((r) => Number((/^L(\d+)$/.exec(r.key) || [])[1] || 0)));
-  return { required, core, coreStats: gateStats(core), later, lastLesson, ...gateStats(required) };
+  return { required, core, coreStats: gateStats(core), salesforce, salesforceStats: gateStats(salesforce), later, lastLesson, ...gateStats(required) };
 }
 
 function partProgress(st) {
@@ -1394,8 +1398,8 @@ function viewCourse() {
     const info = plan[r.key] || {};
     const cs = cardStatsFor(r.key);
     const isCurrent = r.key === currentKey;
-    const label = /^L\d+$/.test(r.key)
-      ? `<strong>${r.key}</strong> ${inline(info.title || r.name.replace(/^L\d+\s*/i, ""))}`
+    const label = /^[LS]\d+$/.test(r.key)
+      ? `<strong>${r.key}</strong> ${inline(info.title || r.name.replace(/^[LS]\d+\s*/i, ""))}`
       : `<strong>${inline(r.name)}</strong>`;
     const details = app.openLesson !== r.key ? "" : `
       <tr><td colspan="4">
@@ -1449,6 +1453,11 @@ function viewCourse() {
     <p class="muted small" style="margin-bottom:0">Click a lesson for its objectives, gate dates, and card breakdown.</p>
   </div>
 
+  ${sum.salesforce.length ? `<div class="panel"><h2>Salesforce bridge (optional)</h2>
+    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production. It does not gate Part 2, and it is not part of the course percentage.</p>
+    <p class="small" style="margin-top:0"><strong>${sum.salesforceStats.pct}%</strong> <span class="muted">&middot; ${partProgress(sum.salesforceStats)}</span></p>
+    ${table(sum.salesforce)}</div>` : ""}
+
   ${sum.later.filter((lp) => lp.rows.length).map((lp) => `<div class="panel"><h2>${lp.title}</h2>
     <p class="muted small" style="margin-top:0">${lp.why}</p>
     <p class="small" style="margin-top:0"><strong>${lp.stats.pct}%</strong> <span class="muted">&middot; ${partProgress(lp.stats)}</span></p>
@@ -1458,6 +1467,7 @@ function viewCourse() {
     <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0 to L${sum.lastLesson} and the Git capstone)
     has four mastery gates (Explain, Predict, Perform, Verify), recorded with dates in <code>${COURSE_PROGRESS_FILE}</code>.
     Course completion is gates observed out of ${sum.gatesTotal}; a lesson is Mastered when all four are observed.
+    S1–S3 are optional and are left out of that percentage.
     Flash cards verified is cards with ${VERIFY_STREAK} first-try passes in a row, so it drops when new cards are added and rises as they stick.
     Both update automatically every ${REFRESH_MS / 1000} seconds and when you return to this tab.
   </p>`;
