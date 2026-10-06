@@ -336,7 +336,7 @@ function renderMd(md) {
 }
 
 // ---------- Course plan (PROGRESS.md + COURSE.md) ----------
-// Lessons are matched across files by key: "L0".."L66" and "Capstone".
+// Lessons are matched across files by key: "L0".."L67" and "Capstone".
 // All of them count toward the completion percentage.
 function lessonKey(name) {
   const s = String(name || "").trim();
@@ -414,24 +414,24 @@ function loadCachedCourse() {
 // Parts 2-11 by lesson number. Part 1 is L0-L15 and the Capstone.
 const LATER_PARTS = [
   { part: 2, from: 16, title: "Part 2: Salesforce orgs",
-    why: "Orgs are deploy targets. A reviewed commit moves through your org, integration, staging, and production." },
-  { part: 3, from: 21, title: "Part 3: Cursor's AI tools",
+    why: "Orgs are deploy targets. A reviewed commit moves through your org, integration, staging, and production, and a bad release is corrected on a branch." },
+  { part: 3, from: 22, title: "Part 3: Cursor's AI tools",
     why: "Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request." },
-  { part: 4, from: 27, title: "Part 4: Directing an agent",
+  { part: 4, from: 28, title: "Part 4: Directing an agent",
     why: "A clear request, an approved plan, and one request per chat decide most of what the agent gets right." },
-  { part: 5, from: 31, title: "Part 5: Checking and correcting agent work",
+  { part: 5, from: 32, title: "Part 5: Checking and correcting agent work",
     why: "“Finished” from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence." },
-  { part: 6, from: 36, title: "Part 6: The project brain",
+  { part: 6, from: 37, title: "Part 6: The project brain",
     why: "What should outlast a chat goes in committed files, before any work runs in a copy." },
-  { part: 7, from: 39, title: "Part 7: Code you didn't write",
+  { part: 7, from: 40, title: "Part 7: Code you didn't write",
     why: "Most real work is in code someone else wrote. Learn it and pin down its behavior before you change it." },
-  { part: 8, from: 41, title: "Part 8: A repo that stands on its own",
+  { part: 8, from: 42, title: "Part 8: A repo that stands on its own",
     why: "Every copy starts from what's committed. The repo must set itself up and check itself without your machine." },
-  { part: 9, from: 45, title: "Part 9: Isolated copies",
+  { part: 9, from: 46, title: "Part 9: Isolated copies",
     why: "Each request gets its own copy, so your folder and <code>main</code> stay as they are until you accept the work." },
-  { part: 10, from: 51, title: "Part 10: Planning and parallel work",
+  { part: 10, from: 52, title: "Part 10: Planning and parallel work",
     why: "Bigger and parallel work collides in ways a single request never does." },
-  { part: 11, from: 56, title: "Part 11: Tools, guardrails, and automation",
+  { part: 11, from: 57, title: "Part 11: Tools, guardrails, and automation",
     why: "More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off." },
 ];
 
