@@ -38,6 +38,8 @@ only when all four have dates.
 | S1 One commit, four orgs | Not started | | | | |
 | S2 Build on a branch in your own org | Not started | | | | |
 | S3 Promote the same commit | Not started | | | | |
+| S4 A change set that matches the commit | Not started | | | | |
+| S5 Production on paper | Not started | | | | |
 | L16 Editor navigation | Not started | | | | |
 | L17 Tab and Inline Edit | Not started | | | | |
 | L18 Agent chat basics | Not started | | | | |
