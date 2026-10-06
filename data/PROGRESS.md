@@ -35,6 +35,9 @@ only when all four have dates.
 | L14 Tags and releases | Not started | | | | |
 | L15 Finding a bad commit | Not started | | | | |
 | Capstone (Git workflow) | Not started | | | | |
+| S1 One commit, four orgs | Not started | | | | |
+| S2 Build on a branch in your own org | Not started | | | | |
+| S3 Promote the same commit | Not started | | | | |
 | L16 Editor navigation | Not started | | | | |
 | L17 Tab and Inline Edit | Not started | | | | |
 | L18 Agent chat basics | Not started | | | | |
