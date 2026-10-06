@@ -336,14 +336,12 @@ function renderMd(md) {
 }
 
 // ---------- Course plan (PROGRESS.md + COURSE.md) ----------
-// Lessons are matched across files by key: "L0".."L61", "Capstone", and "S1".."S5".
+// Lessons are matched across files by key: "L0".."L66" and "Capstone".
 // All of them count toward the completion percentage.
 function lessonKey(name) {
   const s = String(name || "").trim();
   const m = s.match(/^(L\d+)\b/i);
   if (m) return m[1].toUpperCase();
-  const sf = s.match(/^(S\d+)\b/i);
-  if (sf) return sf[1].toUpperCase();
   if (/^capstone/i.test(s)) return "Capstone";
   return null;
 }
@@ -413,30 +411,31 @@ function loadCachedCourse() {
   if (c) { loadCourse(c.progressMd, c.courseMd); app.course.cached = true; }
 }
 
-// Parts 2-10 by lesson number. Part 1 is L0-L15 and the Capstone.
+// Parts 2-11 by lesson number. Part 1 is L0-L15 and the Capstone.
 const LATER_PARTS = [
-  { part: 2, from: 16, title: "Part 2: Cursor's AI tools",
+  { part: 2, from: 16, title: "Part 2: Salesforce orgs",
+    why: "Orgs are deploy targets. A reviewed commit moves through your org, integration, staging, and production." },
+  { part: 3, from: 21, title: "Part 3: Cursor's AI tools",
     why: "Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request." },
-  { part: 3, from: 22, title: "Part 3: Directing an agent",
+  { part: 4, from: 27, title: "Part 4: Directing an agent",
     why: "A clear request, an approved plan, and one request per chat decide most of what the agent gets right." },
-  { part: 4, from: 26, title: "Part 4: Checking and correcting agent work",
+  { part: 5, from: 31, title: "Part 5: Checking and correcting agent work",
     why: "“Finished” from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence." },
-  { part: 5, from: 31, title: "Part 5: The project brain",
+  { part: 6, from: 36, title: "Part 6: The project brain",
     why: "What should outlast a chat goes in committed files, before any work runs in a copy." },
-  { part: 6, from: 34, title: "Part 6: Code you didn't write",
+  { part: 7, from: 39, title: "Part 7: Code you didn't write",
     why: "Most real work is in code someone else wrote. Learn it and pin down its behavior before you change it." },
-  { part: 7, from: 36, title: "Part 7: A repo that stands on its own",
+  { part: 8, from: 41, title: "Part 8: A repo that stands on its own",
     why: "Every copy starts from what's committed. The repo must set itself up and check itself without your machine." },
-  { part: 8, from: 40, title: "Part 8: Isolated copies",
+  { part: 9, from: 45, title: "Part 9: Isolated copies",
     why: "Each request gets its own copy, so your folder and <code>main</code> stay as they are until you accept the work." },
-  { part: 9, from: 46, title: "Part 9: Planning and parallel work",
+  { part: 10, from: 51, title: "Part 10: Planning and parallel work",
     why: "Bigger and parallel work collides in ways a single request never does." },
-  { part: 10, from: 51, title: "Part 10: Tools, guardrails, and automation",
+  { part: 11, from: 56, title: "Part 11: Tools, guardrails, and automation",
     why: "More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off." },
 ];
 
 function coursePart(key) {
-  if (/^S\d+$/i.test(key || "")) return 0;
   const m = /^L(\d+)$/i.exec(key || "");
   const n = m ? Number(m[1]) : -1;
   let part = 1;
@@ -455,14 +454,13 @@ function courseSummary() {
   const p = app.course?.progress;
   if (!p) return null;
   const required = p.rows;
-  const salesforce = required.filter((r) => coursePart(r.key) === 0);
   const core = required.filter((r) => coursePart(r.key) === 1);
   const later = LATER_PARTS.map((lp) => {
     const rows = required.filter((r) => coursePart(r.key) === lp.part);
     return { ...lp, rows, stats: gateStats(rows) };
   });
   const lastLesson = Math.max(0, ...required.map((r) => Number((/^L(\d+)$/.exec(r.key) || [])[1] || 0)));
-  return { required, core, coreStats: gateStats(core), salesforce, salesforceStats: gateStats(salesforce), later, lastLesson, ...gateStats(required) };
+  return { required, core, coreStats: gateStats(core), later, lastLesson, ...gateStats(required) };
 }
 
 function partProgress(st) {
@@ -1453,18 +1451,13 @@ function viewCourse() {
     <p class="muted small" style="margin-bottom:0">Click a lesson for its objectives, gate dates, and card breakdown.</p>
   </div>
 
-  ${sum.salesforce.length ? `<div class="panel"><h2>Salesforce bridge</h2>
-    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production, plus a change-set list and a production note. Required after the capstone. These gates are included in the course percentage, and Lesson 16 starts after S5.</p>
-    <p class="small" style="margin-top:0"><strong>${sum.salesforceStats.pct}%</strong> <span class="muted">&middot; ${partProgress(sum.salesforceStats)}</span></p>
-    ${table(sum.salesforce)}</div>` : ""}
-
   ${sum.later.filter((lp) => lp.rows.length).map((lp) => `<div class="panel"><h2>${lp.title}</h2>
     <p class="muted small" style="margin-top:0">${lp.why}</p>
     <p class="small" style="margin-top:0"><strong>${lp.stats.pct}%</strong> <span class="muted">&middot; ${partProgress(lp.stats)}</span></p>
     ${table(lp.rows)}</div>`).join("\n")}
 
   <p class="muted small">
-    <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0–L15, the Git capstone, S1–S5, and L16–L${sum.lastLesson})
+    <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0 to L${sum.lastLesson} and the Git capstone)
     has four mastery gates (Explain, Predict, Perform, Verify), recorded with dates in <code>${COURSE_PROGRESS_FILE}</code>.
     Course completion is gates observed out of ${sum.gatesTotal}; a lesson is Mastered when all four are observed.
     Flash cards verified is cards with ${VERIFY_STREAK} first-try passes in a row, so it drops when new cards are added and rises as they stick.
