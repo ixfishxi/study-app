@@ -336,8 +336,8 @@ function renderMd(md) {
 }
 
 // ---------- Course plan (PROGRESS.md + COURSE.md) ----------
-// Lessons are matched across files by key: "L0".."L61", "Capstone", and optional "S1".."S3".
-// L0–L61 and the capstone count toward the completion percentage. S1–S5 do not.
+// Lessons are matched across files by key: "L0".."L61", "Capstone", and "S1".."S5".
+// All of them count toward the completion percentage.
 function lessonKey(name) {
   const s = String(name || "").trim();
   const m = s.match(/^(L\d+)\b/i);
@@ -454,8 +454,8 @@ function gateStats(rows) {
 function courseSummary() {
   const p = app.course?.progress;
   if (!p) return null;
-  const required = p.rows.filter((r) => coursePart(r.key) !== 0);
-  const salesforce = p.rows.filter((r) => coursePart(r.key) === 0);
+  const required = p.rows;
+  const salesforce = required.filter((r) => coursePart(r.key) === 0);
   const core = required.filter((r) => coursePart(r.key) === 1);
   const later = LATER_PARTS.map((lp) => {
     const rows = required.filter((r) => coursePart(r.key) === lp.part);
@@ -1453,8 +1453,8 @@ function viewCourse() {
     <p class="muted small" style="margin-bottom:0">Click a lesson for its objectives, gate dates, and card breakdown.</p>
   </div>
 
-  ${sum.salesforce.length ? `<div class="panel"><h2>Salesforce bridge (optional)</h2>
-    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production, plus a change-set list and a production note. It does not gate Part 2, and it is not part of the course percentage.</p>
+  ${sum.salesforce.length ? `<div class="panel"><h2>Salesforce bridge</h2>
+    <p class="muted small" style="margin-top:0">A reviewed commit promoted through your org, integration, staging, and production, plus a change-set list and a production note. Required after the capstone. These gates are included in the course percentage, and Lesson 16 starts after S5.</p>
     <p class="small" style="margin-top:0"><strong>${sum.salesforceStats.pct}%</strong> <span class="muted">&middot; ${partProgress(sum.salesforceStats)}</span></p>
     ${table(sum.salesforce)}</div>` : ""}
 
@@ -1464,10 +1464,9 @@ function viewCourse() {
     ${table(lp.rows)}</div>`).join("\n")}
 
   <p class="muted small">
-    <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0 to L${sum.lastLesson} and the Git capstone)
+    <strong>How the percentage works:</strong> each of the ${sum.lessons} lessons (L0–L15, the Git capstone, S1–S5, and L16–L${sum.lastLesson})
     has four mastery gates (Explain, Predict, Perform, Verify), recorded with dates in <code>${COURSE_PROGRESS_FILE}</code>.
     Course completion is gates observed out of ${sum.gatesTotal}; a lesson is Mastered when all four are observed.
-    S1–S5 are optional and are left out of that percentage.
     Flash cards verified is cards with ${VERIFY_STREAK} first-try passes in a row, so it drops when new cards are added and rises as they stick.
     Both update automatically every ${REFRESH_MS / 1000} seconds and when you return to this tab.
   </p>`;
