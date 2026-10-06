@@ -22,13 +22,13 @@ progress lives in the files, not the chat.
 
 The course has ten parts, taught in order, plus an optional Salesforce bridge
 after the capstone. Each required lesson starts only after the one before it
-is Mastered. S1–S3 start only after the capstone, in order, and only if you
+is Mastered. S1–S5 start only after the capstone, in order, and only if you
 choose them. They do not gate Lesson 16.
 
 | Part | Lessons | What it teaches | Why it's a separate part |
 |------|---------|-----------------|--------------------------|
 | 1. Core Git workflow | L0–L15, Capstone | Git and GitHub by hand, from a request to a merged pull request, plus history cleanup, cherry-pick and stash, tags, and bisect | Everything later depends on it. The capstone proves the whole Git workflow before any agent work. |
-| Salesforce bridge (optional) | S1–S3, callback on L37 | A reviewed commit promoted through Salesforce orgs: your org, integration, staging, production | Orgs are deploy targets. The bridge applies Part 1 to that flow and does not gate Part 2. |
+| Salesforce bridge (optional) | S1–S5, callback on L37 | A reviewed commit promoted through Salesforce orgs, a change set that matches that commit, and a production deploy described on paper | Orgs are deploy targets. The bridge applies Part 1 to that flow and does not gate Part 2. |
 | 2. Cursor's AI tools | L16–L21 | Editor navigation, Tab and Inline Edit, agent chat, sandbox and run modes, secrets, undoing agent work | Learn each tool, and its safety limits, in your own checkout before you trust an agent with a real request. |
 | 3. Directing an agent | L22–L25 | Writing a work request, Plan and Ask modes, chat scope, the Agents Window | A clear request, an approved plan, and one request per chat decide most of what the agent gets right. |
 | 4. Checking and correcting agent work | L26–L30 | Review and testing, weakened tests, triaging review findings, revising agent work, debugging | "Finished" from an agent is where your job starts: prove it, check the checks, send problems back, and find bugs with evidence. |
@@ -651,9 +651,10 @@ The bridge does not gate Lesson 16.
 ## Salesforce bridge (optional)
 
 This follows the Git capstone. Take it, or go straight to Lesson 16. Skipping
-it is a finished choice. S1–S3 use the same four gates as every other lesson.
-S2 and S3 run in `sfwork\`, not in `practice\`. No lesson in this bridge
-deploys to production.
+it is a finished choice. S1–S5 use the same four gates as every other lesson.
+S2 and S3 run in `sfwork\`, not in `practice\`. You name the Salesforce sandbox
+when S2 starts. S4 and S5 stay on paper. No lesson in this bridge deploys to
+production or uploads a change set.
 
 The source of truth is the Git commit. Each org has one job:
 
@@ -700,7 +701,8 @@ The source of truth is the Git commit. Each org has one job:
 
 **Objectives**
 - `sfwork\` is its own repo. `practice\` stays the Python course repo.
-- You build in a scratch org or your own Developer sandbox, on a branch.
+- You name the Salesforce sandbox at the start of this lesson, then build there
+  on a branch. It is a scratch org or your own Developer sandbox.
 - The metadata you changed comes onto that branch and is committed there.
 - A pull request is how the change leaves your org. You do not deploy it to
   the shared sandbox in this lesson.
@@ -756,10 +758,74 @@ The source of truth is the Git commit. Each org has one job:
 
 ---
 
+### S4: A change set that matches the commit
+
+*Git names the components. A change set only carries that list from one org to another.*
+
+**Objectives**
+- An outbound change set is a list of components in a Salesforce org. Git does
+  not store that list.
+- The commit's diff is the list that belongs in the change set.
+- A component in the change set that is not in the commit makes the target org
+  differ from the snapshot you reviewed.
+- This lesson writes the list. It does not upload or deploy a change set.
+
+**Commands:** `git show`, `git diff`
+
+**Cursor:** the commit diff in Source Control.
+
+**Hands-on**
+- The instructor shows one diff. You say which components belong in the
+  outbound change set, and which file in the diff is not a component to add.
+
+**Independent exercise**
+- From the tag you made in S3, write the component list a release manager would
+  put in the outbound change set. Mark anything in the org that you would
+  refuse to add because it is not in that commit. Show the list next to
+  `git show` of the tag.
+
+**Mastery check**
+- Explain why the change set is not the source of truth.
+- Explain what goes wrong when the change set and the commit disagree.
+
+---
+
+### S5: Production on paper
+
+*Say what production would receive. Do not deploy it.*
+
+**Objectives**
+- Production receives the same tag staging already received.
+- The transport can be a CLI deploy or an inbound change set built from that
+  tag's component list. Either way the snapshot is the tag.
+- A deployment note names the tag, the orgs that already have it, who would
+  approve, and the previous tag you would return to.
+- You stop before the production deploy. Nothing in this lesson logs in to
+  production.
+
+**Commands:** `git show`, `git tag`
+
+**Cursor:** the Source Control Graph, to read the tag.
+
+**Hands-on**
+- You say which Git object production would receive, and which earlier tag a
+  rollback would name.
+
+**Independent exercise**
+- Write the deployment note for the S3 tag: the commit, the orgs that already
+  received it, what production would receive, and the command or change-set
+  upload you will not run. The instructor checks the note against `git show`.
+
+**Mastery check**
+- Explain why production does not get a new list built from memory.
+- Explain why the note is finished without a production login.
+
+---
+
 ## Part 2: Cursor's AI tools
 
 This follows the Git capstone. You may take the Salesforce bridge first. Parts
-2 to 10 start once the capstone is done, whether or not you finish S1–S3. You
+2 to 10 start once the capstone is done, whether or not you finish S1–S5. You
 still need to be able to branch, commit, push, and open a pull request.
 
 Each lesson from here on runs like the lessons before it: a short concept, one
