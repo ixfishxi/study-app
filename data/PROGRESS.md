@@ -87,6 +87,7 @@ only when all four have dates.
 | L65 Measuring your agent workflow | Not started | | | | |
 | L66 Full-loop practice | Not started | | | | |
 | L67 Agent capstone | Not started | | | | |
+| L68 A work list you would follow | Not started | | | | |
 
 
 ## Mistakes to revisit
