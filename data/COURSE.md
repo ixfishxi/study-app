@@ -5,7 +5,12 @@ agents. By the end of Part 1 you can take a real request from branch creation
 through pull request, review, merge, and cleanup without instructions. By the
 end of the course you run many agent work requests, each in its own isolated
 copy, from one project brain committed in the repo, and `main` changes only
-when you accept a finished request.
+when you accept a finished request. You can also keep a work list an agent
+can refresh: you name the sources, commit the priority rule before the agent
+reads them, store the ranked list in the repo, correct the list and then the
+rule, and add another source only after the first list is one you would
+follow. L68 is that loop. Mail, chat, and other accounts stay out of the
+lessons. The same method is what you point at real work tools afterward.
 
 Reference card: [resources/Git_Development_Workflow.pdf](resources/Git_Development_Workflow.pdf)
 Progress and next step: [PROGRESS.md](PROGRESS.md)
@@ -35,7 +40,7 @@ the one before it is Mastered. Part 2 is L16–L21. Lesson 22 starts after L21.
 | 8. A repo that stands on its own | L42–L45 | Pinned dependencies and one setup command, a command-line test and a linter in CI, a fresh clone, and Milestone 2 (taking over a teammate's branch) | Every copy starts from what's committed. The repo must set itself up and check itself without your machine. |
 | 9. Isolated copies | L46–L51 | Git worktrees, Cursor `/worktree`, cloud agents, setting up each copy to test, moving work between local and cloud | Each request gets its own copy, so your folder and `main` stay as they are until you accept the work. |
 | 10. Planning and parallel work | L52–L56 | Task breakdown, GitHub Issues, two requests at once, semantic conflicts, and Milestone 3 (a release built by parallel agents) | Bigger and parallel work collides in ways a single request never does. |
-| 11. Tools, guardrails, and automation | L57–L67 | Subagents, MCP, prompt injection, hooks, Projects, subscriptions, Automations, brain pruning, measuring the workflow, and an agent capstone | More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off. |
+| 11. Tools, guardrails, and automation | L57–L68 | Subagents, MCP, prompt injection, hooks, Projects, subscriptions, Automations, brain pruning, measuring the workflow, an agent capstone, and a work list from named sources | More agents and more reach need hard limits, a coordinator whose results you still check, and evidence that the workflow pays off. L68 is the work list. |
 
 ---
 
@@ -1450,8 +1455,9 @@ replying on the pull request.
 
 What should outlast one chat goes in committed files. Build the project brain,
 then put each piece of guidance where it applies. This comes before any copies,
-so every copy starts with the brain. The part ends with Milestone 1: one real
-feature through everything since Part 3.
+so every copy starts with the brain. A rule for which work comes first is
+that same kind of file. L68 is where you use one. The part ends with
+Milestone 1: one real feature through everything since Part 3.
 
 The brain files belong in `practice\`, not in this course folder's `.cursor\`
 rules. Those course rules tell the instructor how to teach.
@@ -1467,6 +1473,7 @@ rules. Those course rules tell the instructor how to teach.
   `AGENTS.md` is plain instructions for this repo.
 - A file counts after it is committed and pushed. Every new chat reads the repo
   as it is. A sentence typed in a chat does not travel.
+- A priority rule is one of these files. It is not in force until it is committed.
 
 **Commands:** the branch, commit, and pull request workflow you already know.
 `git ls-files`, `git show`, `git log --oneline origin/main`.
@@ -2099,6 +2106,8 @@ built by parallel agents.
   once the GitHub integration is connected.
 - Issue text is input the agent reads. Anyone who can write an issue is writing
   into the agent's instructions.
+- The queue is the record of work that is waiting. A list that exists only in
+  the chat is gone when the chat is.
 
 **Commands:** `gh issue create`, `gh issue list`, `gh issue view`,
 `gh pr create`, `gh pr view`
@@ -2244,7 +2253,7 @@ the least access, reading untrusted text as data, a hook that blocks production
 writes, a coordinator that delegates but does not write the change, and
 automations that still end in work you review. The part ends by pruning the
 brain, measuring whether your workflow pays off, a guided run through every
-control, and a capstone you do on your own.
+control, a capstone you do on your own, and a work list from sources you named.
 
 ### L57: Subagents (workers that search, test, or review)
 
@@ -2403,6 +2412,8 @@ command approval prompt. The run mode setting for agent commands.
 - A Project keeps its own shared notes. Those notes are not the committed
   brain. What should last goes into the repo's knowledge files.
 - The knowledge update is its own commit, after the request is accepted.
+- A coordinator can gather and rank work. The list you keep is still a file
+  you commit, and you still accept it.
 
 **Commands:** `gh pr list`, `gh pr diff`, `gh pr checks`, `git log --oneline`, `git show`
 
@@ -2477,6 +2488,7 @@ the chat input. Removing a subscription from that list.
   requests. Each run costs money.
 - It still ends in a pull request or a comment you review. `main` changes only
   when you accept.
+- A schedule can refresh a work list. You still read the list before you act on it.
 
 **Commands:** `gh run list`, `gh pr list`, `gh pr view --comments`,
 `git log --oneline origin/main`
@@ -2651,6 +2663,46 @@ Any Shaky or Missed item goes into "Mistakes to revisit" for a targeted retest.
 **Mastery check**
 - For each surprise, explain what you noticed and why you chose your response.
 - Explain what was true of `main` at each step before you accepted the work.
+
+---
+
+### L68: A work list you would follow
+
+*Name the sources, commit the priority rule first, and keep the ranked list in the repo.*
+
+**Objectives**
+- Name the sources that are in scope before the agent reads anything. Everything
+  else stays out, including secrets and any personal inbox.
+- The priority rule is a committed brain file, written before the agent sees
+  the sources.
+- The agent writes the ranked list to a file in the repo. The chat is not the record.
+- You correct the list, then you change the rule in its own commit so the next
+  list would make that correction itself.
+- A second source is added only after the first list was one you would follow.
+- A coordinator (L61) or a schedule (L63) can refresh this list later. This
+  lesson does the loop by hand, and you still check the result.
+
+**Commands:** `git status`, `git diff`, `git log --oneline`
+
+**Cursor:** a fresh chat, the brain files from L37, and the list file you commit.
+
+**Hands-on**
+- The instructor shows two piles of notes. You say which pile is in scope, and
+  what the priority rule has to decide before any item is ranked.
+
+**Independent exercise**
+- On a branch, write the priority rule and commit it. The instructor then gives
+  you one local source. Have the agent rank it into a file. Commit that list.
+  Show `git log` with the rule and the list as separate commits.
+- Correct one item. Update the rule so the next list would rank that item the
+  same way, in its own commit.
+- Add a second source the instructor gives you. Show the new list and say, from
+  the rule, why the top item is first. Do not connect mail, chat, or any account.
+
+**Mastery check**
+- Explain why the second source waited.
+- Explain where the list lives after the chat is gone, and why you still read
+  it before you act.
 
 ---
 
